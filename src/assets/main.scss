@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import './base.scss';
+
+html {
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg-color);
+  font-size: 14px;
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
