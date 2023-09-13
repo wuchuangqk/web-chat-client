@@ -2,6 +2,9 @@
   <main class="main">
     <Chat />
     <Input />
+    <div
+      class=" hidden bg-purple-600 bg-fuchsia-600 bg-pink-600 bg-violet-600 bg-sky-600 bg-teal-600 bg-yellow-600 bg-red-600">
+    </div>
   </main>
 </template>
 
@@ -15,15 +18,16 @@ appStore.initConnection()
 </script>
 <style lang="scss" scoped>
 .main {
-  // height: 100%;
   width: 600px;
   background-color: var(--chat-bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border-radius: 4px;
 
   @media screen and (max-width: 600px) {
     width: 100%;
+    border-radius: 0;
   }
 }
 </style>

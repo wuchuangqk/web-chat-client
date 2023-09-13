@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import './base.scss';
+@import './safari.scss';
 
 html {
   height: 100%;
@@ -18,4 +19,13 @@ body {
   display: flex;
   justify-content: center;
   overflow: hidden;
+  padding: 20px 0;
+
+  @media screen and (max-width: 600px) {
+    padding: 0;
+  }
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none;
 }

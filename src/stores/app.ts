@@ -1,10 +1,11 @@
-import { ref, computed, shallowRef } from 'vue'
+import { ref, shallowRef } from 'vue'
 import { defineStore } from 'pinia'
 
 let ws: WebSocket
 export const useAppStore = defineStore('app', () => {
-  const userList = shallowRef([])
-  const contentList = ref<IContent[]>([])
+  const user = shallowRef<IUser>({} as IUser) // 当前用户
+  const userList = shallowRef<IUser[]>([]) // 所有在线的用户
+  const contentList = ref<IMessage[]>([]) // 消息记录
   // 初始化websocket链接
   const initConnection = () => {
     ws = new WebSocket('ws://192.168.3.20:1060/chat')
@@ -20,26 +21,29 @@ export const useAppStore = defineStore('app', () => {
     }
   }
   const handleMessage = (msg: MessageEvent) => {
-    console.log('ws message:', msg.data);
+    // console.log('ws message:', msg.data);
     const { type, data } = JSON.parse(msg.data)
     switch (type) {
-      case 'user':
-        userList.value = data.map((id: number) => `用户${id}`)
-        console.log(userList.value);
-
+      case 'users':
+        userList.value = data
+        break
+      case 'id':
+        const _user = userList.value.find(user => user.id === data)
+        if (_user !== undefined) {
+          user.value = _user
+        }
         break
       case 'message':
-        contentList.value.push({
-          content: data,
-          isSelf: false
-        })
+        contentList.value.push(data)
         break
     }
   }
-  const sendMessage = (data: IMessage) => {
+  // 发送文本消息
+  const sendMessage = (data: IMessage2) => {
     ws.send(JSON.stringify(data))
   }
   return {
+    user,
     userList,
     contentList,
     initConnection,

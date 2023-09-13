@@ -1,10 +1,9 @@
 <template>
-  <div class=" absolute left-0 right-0 bottom-0">
-    <div class="flex p-2 gap-1">
-      <div v-for="user in userList" class=" rounded-full py-1 px-2 bg-black/20 text-black/60 flex items-center">
-        <!-- <div class=" rounded-full w-2 h-2 mr-1"></div> -->
-        <!-- :class="user.onLine ? 'bg-green-500' : 'bg-red-500'" -->
-        <span>{{ user }}</span>
+  <div class=" absolute left-0 right-0 bottom-0 overflow-x-auto hidden-scrollbar">
+    <div class="flex gap-1 p-2">
+      <div v-for="user in userList" class=" rounded-full py-1 px-2 flex items-center shrink-0 text-white"
+        :class="user.color">
+        <span>{{ getName(user) }}</span>
       </div>
     </div>
   </div>
@@ -13,8 +12,14 @@
 import { toRefs } from 'vue'
 import { useAppStore } from '@/stores/app';
 
-const { userList } = toRefs(useAppStore())
-
+const { userList, user } = toRefs(useAppStore())
+const getName = (_user: IUser) => {
+  if (_user.id === user.value.id) {
+    return '我'
+  } else {
+    return _user.name
+  }
+}
 </script>
 
 <style lang="scss" scoped></style>
