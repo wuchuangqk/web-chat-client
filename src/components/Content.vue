@@ -5,6 +5,8 @@
       :class="{ 'self': isSelf }" v-html="message.data"></div>
     <img v-if="message.type === 'image'" :src="message.data" alt="" class=" max-w-[30%] rounded shadow mb-2"
       @click="previewImg = message.data">
+    <div v-if="message.type === 'file'" class="p-2 rounded bg-white max-w-[80%] mb-2 break-all"
+      :class="{ 'self': isSelf }">文件：{{ message.data }}</div>
     <Avatar v-if="isSelf" :user="message.user" class="ml-2" />
     <div v-if="previewImg"
       class=" fixed top-0 right-0 bottom-0 left-0 flex justify-center items-center overflow-auto z-10 bg-black/90"

@@ -11,11 +11,11 @@
       <span class="text-gray-400 mr-2 text-sm">Enter发送，Ctrl+Enter换行</span>
       <button class="bg-purple-500 text-white rounded px-3 shadow py-1" @click="send">发送</button>
     </div>
-    <input ref="fileUploaderRef" type="file" accept=".jpg,.png" style="display: none;" />
+    <input ref="imgUploaderRef" type="file" accept=".jpg,.png" style="display: none;" />
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, withScopeId } from 'vue'
 import { useAppStore } from '@/stores/app';
 import JSFile from '@/utils/js-file'
 import Icon from '@/components/Icon.vue'
@@ -51,10 +51,12 @@ const notAllowEnter = (e: KeyboardEvent) => {
   }
 }
 const textareaRef = ref<HTMLTextAreaElement>()
-const fileUploaderRef = ref<HTMLInputElement>()
+const imgUploaderRef = ref<HTMLInputElement>()
+const videoUploaderRef = ref<HTMLInputElement>()
+
 onMounted(() => {
   textareaRef.value?.focus()
-  fileUploaderRef.value?.addEventListener('change', (event: Event) => {
+  imgUploaderRef.value?.addEventListener('change', (event: Event) => {
     const target = event!.target as HTMLInputElement
     if (!target.files) return
     const file = new JSFile(target.files[0])
@@ -77,11 +79,34 @@ onMounted(() => {
       reader.readAsDataURL(file.rawFile)
     }
   })
+  videoUploaderRef.value?.addEventListener('change', (event: Event) => {
+    const target = event!.target as HTMLInputElement
+    if (!target.files) return
+    const file = new JSFile(target.files[0])
+    if (!['mp4', 'mkv'].includes(file.type)) {
+      window.alert('只支持mp4,mkv格式的视频')
+    } else {
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (!reader.result) return
+        const message = {
+          type: 'file',
+          data: reader.result.byteLength,
+          user: appStore.user
+        }
+      }
+      reader.readAsArrayBuffer(file.rawFile)
+    }
+  })
 })
 
 const chooseImg = () => {
-  fileUploaderRef.value?.click()
+  imgUploaderRef.value?.click()
 }
+
+
+// 建立一个RTC链接
+// const RTC = new RTCPeerConnection()
 </script>
 
 <style lang="scss" scoped>

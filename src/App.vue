@@ -1,7 +1,9 @@
 <template>
   <main class="main">
-    <Chat />
-    <Input />
+    <Tabbar />
+    <Chat v-show="appStore.activeTab === 0" />
+    <Input v-show="appStore.activeTab === 0" />
+    <FileTranfer v-show="appStore.activeTab === 1" />
     <div
       class=" hidden bg-purple-600 bg-fuchsia-600 bg-pink-600 bg-violet-600 bg-sky-600 bg-teal-600 bg-yellow-600 bg-red-600">
     </div>
@@ -12,6 +14,8 @@
 import Chat from './components/Chat.vue';
 import Input from './components/Input.vue';
 import { useAppStore } from '@/stores/app';
+import Tabbar from './components/Tabbar.vue';
+import FileTranfer from './components/FileTranfer.vue';
 
 const appStore = useAppStore()
 appStore.initConnection()
