@@ -1,15 +1,22 @@
 <template>
-  <div class="input-wrap flex flex-col">
-    <div class=" border-b border-[#eee] py-2 px-2">
-      <Icon icon="img" class-name="w-6 h-6" @click="chooseImg" />
+  <div class="input-wrap border-t border-t-slate-300 ">
+    <div class="h-full flex flex-col sm:hidden bg-white">
+      <div class="flex-1 px-5 py-3">
+        <textarea ref="textareaRef" v-model="content" placeholder="Enter发送，Ctrl+Enter换行"
+          class="w-full h-full outline-0 resize-none" @keydown="notAllowEnter"></textarea>
+      </div>
+      <div class="flex justify-end items-center px-5 pb-2">
+        <Button @click="send">发送</Button>
+      </div>
     </div>
-    <div class="flex-1 p-2">
-      <textarea ref="textareaRef" v-model="content" class="w-full h-full outline-0 resize-none"
-        @keydown="notAllowEnter"></textarea>
-    </div>
-    <div class="flex justify-end items-center px-2 pb-2">
-      <span class="text-gray-400 mr-2 text-sm">Enter发送，Ctrl+Enter换行</span>
-      <button class="bg-purple-500 text-white rounded px-3 shadow py-1" @click="send">发送</button>
+    <div class="h-full flex items-center md:hidden bg-[#F5F5F5] px-4 py-2">
+      <div class="flex-1 bg-white h-full px-2 rounded">
+        <input ref="textareaRef" v-model="content" placeholder="发送消息" class="w-full h-full outline-0"
+          @keydown="notAllowEnter"/>
+      </div>
+      <div class="h-full flex justify-center shrink-0 items-center ml-4 px-4 rounded bg-[#4EC588] text-white" @click="send">
+        发送
+      </div>
     </div>
     <input ref="imgUploaderRef" type="file" accept=".jpg,.png" style="display: none;" />
   </div>
@@ -18,7 +25,7 @@
 import { onMounted, ref, withScopeId } from 'vue'
 import { useAppStore } from '@/stores/app';
 import JSFile from '@/utils/js-file'
-import Icon from '@/components/Icon.vue'
+import Button from './Button.vue';
 
 const appStore = useAppStore()
 const content = ref('')
@@ -111,8 +118,11 @@ const chooseImg = () => {
 
 <style lang="scss" scoped>
 .input-wrap {
-  flex-basis: 180px;
-  border-top: 1px solid #eee;
-  background-color: #fff;
+  height: 160px;
+  flex-grow: 0;
+
+  @media screen and (max-width: 500px) {
+    height: 60px;
+  }
 }
 </style>

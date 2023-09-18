@@ -1,10 +1,6 @@
-export const download = async (data: {
-  file: ArrayBuffer[];
-  size: number;
-  name?: string;
-}) => {
+export const download = async (data: ITranferInfo) => {
   const link = window.URL.createObjectURL(
-    new Blob(data.file, { type: "arrayBuffer" })
+    new Blob(data.buffers, { type: "arrayBuffer" })
   );
   const a = document.createElement("a");
   a.href = link;
@@ -23,4 +19,18 @@ export const readAsArrayBuffer = (blob: Blob): Promise<ArrayBuffer> => {
     }
     reader.readAsArrayBuffer(blob);
   })
+}
+
+export const fmtSize = (bytes: number = 0) => {
+  const units = ['Bytes', 'KB', 'MB', 'GB', 'TB'];  
+    let result;  
+    for (let i = 0; i < units.length; i++) {  
+        if (bytes < 1024) {  
+            result = bytes + ' ' + units[i];  
+            break;  
+        } else {  
+            bytes /= 1024;  
+        }  
+    }  
+    return result;  
 }

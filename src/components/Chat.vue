@@ -1,15 +1,15 @@
 <template>
-  <div class="relative chat-wrap">
+  <div class="relative chat-wrap bg-[--chat-bg]">
     <div ref="srcollEl" class="p-2 scroll-wrap">
       <Content v-for="content in contentList" :message="content" />
     </div>
-    <User />
+    <!-- <User /> -->
   </div>
 </template>
 <script setup lang="ts">
 import { toRefs, ref, watch, nextTick } from 'vue'
 import Content from './Content.vue';
-import User from './User.vue';
+// import User from './User.vue';
 import { useAppStore } from '@/stores/app';
 
 const { contentList } = toRefs(useAppStore())
