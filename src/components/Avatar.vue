@@ -1,24 +1,18 @@
 <template>
-  <div class="w-8 h-8 rounded-full flex items-center justify-center text-white" :class="props.user.color">
-    <span>{{ name }}</span>
+  <div class="w-9 h-9 rounded-full flex items-center justify-center bg-white">
+    <Icon :icon="typeIconMap[user.type]" class-name="w-7 h-7" />
   </div>
 </template>
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
+import { toRefs } from 'vue'
 import { useAppStore } from '@/stores/app';
+import Icon from './Icon.vue';
 
-const props = defineProps<{
+defineProps<{
   user: IUser
 }>()
 
-const { user } = toRefs(useAppStore())
-const name = computed(() => {
-  if (props.user.id === user.value.id) {
-    return '我'
-  } else {
-    return props.user.id
-  }
-})
+const { typeIconMap } = toRefs(useAppStore())
 </script>
 
 <style lang="scss" scoped></style>

@@ -12,21 +12,23 @@
     <div class="h-full flex items-center md:hidden bg-[#F5F5F5] px-4 py-2">
       <div class="flex-1 bg-white h-full px-2 rounded">
         <input ref="textareaRef" v-model="content" placeholder="发送消息" class="w-full h-full outline-0"
-          @keydown="notAllowEnter"/>
+          @keydown="notAllowEnter" />
       </div>
-      <div class="h-full flex justify-center shrink-0 items-center ml-4 px-4 rounded bg-[#4EC588] text-white" @click="send">
+      <div class="h-full flex justify-center shrink-0 items-center ml-4 px-4 rounded bg-[#4EC588] text-white"
+        @click="send">
         发送
       </div>
     </div>
-    <input ref="imgUploaderRef" type="file" accept=".jpg,.png" style="display: none;" />
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, withScopeId } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAppStore } from '@/stores/app';
-import JSFile from '@/utils/js-file'
 import Button from './Button.vue';
 
+onMounted(() => {
+  textareaRef.value?.focus()
+})
 const appStore = useAppStore()
 const content = ref('')
 let loading = false
@@ -36,12 +38,12 @@ const send = () => {
   if (!content.value.trim()) return
   const value = content.value.split('\n').join('<br/>')
   const message = {
-    type: 'text',
+    type: 'message',
     data: value,
     user: appStore.user
   }
   appStore.contentList.push(message)
-  appStore.sendMessage({ type: 'message', data: message })
+  appStore.sendMessage(message)
   content.value = ''
   loading = false
 }
@@ -58,62 +60,6 @@ const notAllowEnter = (e: KeyboardEvent) => {
   }
 }
 const textareaRef = ref<HTMLTextAreaElement>()
-const imgUploaderRef = ref<HTMLInputElement>()
-const videoUploaderRef = ref<HTMLInputElement>()
-
-onMounted(() => {
-  textareaRef.value?.focus()
-  imgUploaderRef.value?.addEventListener('change', (event: Event) => {
-    const target = event!.target as HTMLInputElement
-    if (!target.files) return
-    const file = new JSFile(target.files[0])
-    if (!['jpg', 'png'].includes(file.type)) {
-      window.alert('只能选择图片')
-    } else if (file.size / 1024 > 2) {
-      window.alert('图片大小不能超过2M')
-    }
-    else {
-      const reader = new FileReader()
-      reader.onload = () => {
-        const message = {
-          type: 'image',
-          data: reader.result,
-          user: appStore.user
-        }
-        appStore.contentList.push(message)
-        appStore.sendMessage({ type: 'message', data: message })
-      }
-      reader.readAsDataURL(file.rawFile)
-    }
-  })
-  videoUploaderRef.value?.addEventListener('change', (event: Event) => {
-    const target = event!.target as HTMLInputElement
-    if (!target.files) return
-    const file = new JSFile(target.files[0])
-    if (!['mp4', 'mkv'].includes(file.type)) {
-      window.alert('只支持mp4,mkv格式的视频')
-    } else {
-      const reader = new FileReader()
-      reader.onload = () => {
-        if (!reader.result) return
-        const message = {
-          type: 'file',
-          data: reader.result.byteLength,
-          user: appStore.user
-        }
-      }
-      reader.readAsArrayBuffer(file.rawFile)
-    }
-  })
-})
-
-const chooseImg = () => {
-  imgUploaderRef.value?.click()
-}
-
-
-// 建立一个RTC链接
-// const RTC = new RTCPeerConnection()
 </script>
 
 <style lang="scss" scoped>

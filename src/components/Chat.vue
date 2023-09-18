@@ -3,7 +3,6 @@
     <div ref="srcollEl" class="p-2 scroll-wrap">
       <Content v-for="content in contentList" :message="content" />
     </div>
-    <!-- <User /> -->
   </div>
 </template>
 <script setup lang="ts">
@@ -28,7 +27,6 @@ watch(contentList.value, () => {
 .chat-wrap {
   flex: 1;
   overflow: hidden;
-  padding-bottom: 45px;
 }
 
 .scroll-wrap {

@@ -22,15 +22,17 @@ export const readAsArrayBuffer = (blob: Blob): Promise<ArrayBuffer> => {
 }
 
 export const fmtSize = (bytes: number = 0) => {
-  const units = ['Bytes', 'KB', 'MB', 'GB', 'TB'];  
-    let result;  
-    for (let i = 0; i < units.length; i++) {  
-        if (bytes < 1024) {  
-            result = bytes + ' ' + units[i];  
-            break;  
-        } else {  
-            bytes /= 1024;  
-        }  
-    }  
-    return result;  
+  const units = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  let result;
+  let unit = ''
+  for (let i = 0; i < units.length; i++) {
+    if (bytes < 1024) {
+      result = bytes
+      unit = units[i]
+      break;
+    } else {
+      bytes /= 1024;
+    }
+  }
+  return result?.toFixed(2) + unit;
 }

@@ -5,7 +5,7 @@
       <Chat />
       <Input />
     </div>
-    <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center">
+    <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center bg-white">
       <UserList />
     </div>
   </main>
@@ -13,6 +13,7 @@
     class=" hidden bg-purple-600 bg-fuchsia-600 bg-pink-600 bg-violet-600 bg-sky-600 bg-teal-600 bg-yellow-600 bg-red-600">
   </div>
   <FileTranfer v-if="appStore.showTranfer" />
+  <UserRegister v-if="appStore.showRegister" />
 </template>
 
 <script setup lang="ts">
@@ -22,9 +23,24 @@ import { useAppStore } from '@/stores/app';
 import FileTranfer from './components/FileTranfer.vue';
 import Nav from './components/Nav/index.vue';
 import UserList from './components/UserList.vue';
+import UserRegister from './components/UserRegister.vue';
+import { onMounted } from 'vue';
 
 const appStore = useAppStore()
-appStore.initConnection()
+onMounted(() => {
+  getUserInfo()
+})
+const getUserInfo = () => {
+  if (!localStorage.getItem('open-chat:user_info')) {
+    appStore.showRegister = true
+    return
+  }
+  const userInfo = JSON.parse(localStorage.getItem('open-chat:user_info') as string)
+  appStore.user.name = userInfo.name
+  appStore.user.type = userInfo.type
+  appStore.initConnection()
+}
+
 </script>
 <style lang="scss" scoped>
 .main {

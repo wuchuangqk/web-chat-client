@@ -1,12 +1,8 @@
 /// <reference types="vite/client" />
-interface IMessage {
+interface IMessage2 {
   type: string
   data: any
   user: IUser
-}
-interface IMessage2 {
-  type: string
-  data: IMessage
 }
 interface IContent {
   content: striing
@@ -17,7 +13,8 @@ interface IContent {
 interface IUser {
   name: string
   id: number
-  color: string
+  // color: string
+  type: string
 }
 interface IFileSender {
   rawFile: File
@@ -28,8 +25,9 @@ interface IFileSender {
 interface ITranferInfo {
   name: string,
   size: number,
-  sender: string // 发送设备
-  receiver: string // 接收设备
+  sender: IUser // 发送设备
+  receiver: IUser // 接收设备
   transferredByte: number // 已传输字节数
   buffers: ArrayBuffer[] // 数据块
+  time: string
 }

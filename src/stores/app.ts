@@ -4,9 +4,13 @@ import { download, readAsArrayBuffer } from '@/utils'
 
 let ws: WebSocket
 export const useAppStore = defineStore('app', () => {
-  const user = shallowRef<IUser>({} as IUser) // 当前用户
+  const user = ref<IUser>({
+    name: '',
+    id: 0,
+    type: '',
+  }) // 当前用户
   const userList = shallowRef<IUser[]>([]) // 所有在线的用户
-  const contentList = ref<IMessage[]>([]) // 消息记录
+  const contentList = ref<IMessage2[]>([]) // 消息记录
   const activeTab = ref(0)
   let RTC: RTCPeerConnection | null = null
   let sendDataChannel: RTCDataChannel | null = null
@@ -16,16 +20,33 @@ export const useAppStore = defineStore('app', () => {
   const tranferInfo = ref<ITranferInfo>({
     name: '',
     size: 0,
-    sender: '',
-    receiver: '',
+    sender: {
+      id: 0,
+      name: '',
+      type: '',
+    },
+    receiver: {
+      id: 0,
+      name: '',
+      type: '',
+    },
     transferredByte: 0,
-    buffers: []
+    buffers: [],
+    time: ''
   })
   const tranferFile = ref<File>()
-  const isShowSend= ref(false)
+  const isShowSend = ref(false)
+  const showRegister = ref(false)
+  const typeIconMap: { [key: string]: string } = {
+    'PC': 'pc',
+    '虚拟机': 'vm',
+    '笔记本': 'laptop',
+    'iPhone': 'iPhone',
+    'iPad': 'iPad',
+  }
   // 初始化websocket链接
   const initConnection = () => {
-    ws = new WebSocket('ws://192.168.3.20:1060/chat')
+    ws = new WebSocket(`ws://192.168.3.20:1060/chat?name=${user.value.name}&type=${user.value.type}`)
     ws.onopen = () => {
       console.log('ws open');
     }
@@ -39,19 +60,16 @@ export const useAppStore = defineStore('app', () => {
   }
 
   const handleMessage = (msg: MessageEvent) => {
-    const { type, data } = JSON.parse(msg.data)
+    const { type, data, user: _user } = JSON.parse(msg.data)
     switch (type) {
       case 'users':
         userList.value = data
         break
       case 'id':
-        const _user = userList.value.find(user => user.id === data)
-        if (_user !== undefined) {
-          user.value = _user
-        }
+        user.value.id = data
         break
       case 'message':
-        contentList.value.push(data)
+        contentList.value.push({ type, data, user: _user })
         break
       case 'receiveOffer':
         connectRTC()
@@ -90,6 +108,7 @@ export const useAppStore = defineStore('app', () => {
         if (description) {
           sendMessage({
             type: 'offer',
+            user: user.value,
             data: {
               user: user.value,
               type: '',
@@ -107,7 +126,6 @@ export const useAppStore = defineStore('app', () => {
     const offer = await RTC!.createOffer();
     await RTC!.setLocalDescription(offer);
   };
-
   const createAnswer = async (data: {
     sender: number;
     description: string;
@@ -117,6 +135,7 @@ export const useAppStore = defineStore('app', () => {
       if (event.candidate) {
         sendMessage({
           type: 'answer',
+          user: user.value,
           data: {
             type: '',
             user: user.value,
@@ -141,6 +160,7 @@ export const useAppStore = defineStore('app', () => {
       tranferInfo.value.receiver = fileInfo.receiver
       tranferInfo.value.transferredByte = 0
       tranferInfo.value.buffers.length = 0
+      tranferInfo.value.time = fileInfo.time
       showTranfer.value = true
       return;
     }
@@ -154,11 +174,14 @@ export const useAppStore = defineStore('app', () => {
   const sendFile = async () => {
     if (!tranferFile.value) return
     isShowSend.value = false
+    const now = new Date()
+    tranferInfo.value.time = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`
     sendDataChannel!.send(JSON.stringify({
       name: tranferFile.value.name,
       size: tranferFile.value.size,
       sender: tranferInfo.value.sender,
       receiver: tranferInfo.value.receiver,
+      time: tranferInfo.value.time
     }));
 
     let offset = 0;
@@ -194,6 +217,8 @@ export const useAppStore = defineStore('app', () => {
     tranferFile,
     tranferInfo,
     isShowSend,
+    showRegister,
+    typeIconMap,
     initConnection,
     sendMessage,
     sendBlobMessage,
