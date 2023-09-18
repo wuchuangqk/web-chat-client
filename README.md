@@ -17,3 +17,9 @@ pnpm dev
 ```js
 pnpm build-only
 ```
+# 预览
+## PC端
+![](https://github.com/wuchuangqk/readme-img/blob/master/PC端1.jpg)
+![](https://github.com/wuchuangqk/readme-img/blob/master/PC端2.jpg)
+## 移动端
+![](https://github.com/wuchuangqk/readme-img/blob/master/移动端.jpg)
