@@ -4,12 +4,12 @@
     <ul class="flex flex-col gap-y-2">
       <li v-for="user in otherUsers" :key="user.id" class=" rounded bg-[#F0FDF4] flex items-center h-10 px-4 border"
         @click="chooseFile(user)">
-        <Icon :icon="appStore.typeIconMap[user.type]" class-name="w-8 h-8 mr-2" />
+        <Icon :icon="store.typeIconMap[user.type]" class-name="w-8 h-8 mr-2" />
         <span>[{{ user.type }}]{{ user.name }}</span>
         <Icon icon="tranfer" class-name="w-5 h-5 ml-auto text-[#999]" />
       </li>
     </ul>
-    <input ref="fileUploaderRef" type="file" style="display: none;" />
+    <input ref="fileUploaderRef" type="file" multiple style="display: none;" />
   </div>
 </template>
 <script setup lang="ts">
@@ -17,14 +17,14 @@ import { ref, onMounted, computed } from 'vue'
 import { useAppStore } from '@/stores/app';
 import Icon from './Icon.vue';
 
-const appStore = useAppStore()
+const store = useAppStore()
 const fileUploaderRef = ref<HTMLInputElement>()
 let receiver: IUser
 onMounted(() => {
   fileUploaderRef.value?.addEventListener('change', fileChange)
 })
 const otherUsers = computed(() => {
-  return appStore.userList.filter(user => user.id !== appStore.user.id)
+  return store.userList.filter(user => user.id !== store.user.id)
 })
 const chooseFile = (user: IUser) => {
   receiver = user
@@ -33,20 +33,26 @@ const chooseFile = (user: IUser) => {
 const fileChange = (event: Event) => {
   const target = event!.target as HTMLInputElement
   if (!target.files) return
-  appStore.isShowSend = true
-  appStore.showTranfer = true
+  store.isShowSend = true
+  store.showTranfer = true
 
-  appStore.tranferFile = target.files[0]
-  appStore.tranferInfo.name = appStore.tranferFile.name
-  appStore.tranferInfo.size = appStore.tranferFile.size
-  appStore.tranferInfo.sender = appStore.user
-  appStore.tranferInfo.receiver = receiver
-  appStore.tranferInfo.transferredByte = 0
-  appStore.tranferInfo.buffers.length = 0
-  console.log('tranferInfo:', appStore.tranferInfo);
+  store.resetQueue()
+  for (let i = 0; i < target.files.length; i++) {
+    const file = target.files[i]
+    store.tranferFileQueue.push(file)
+    store.tranferInfoQueue.push({
+      name: file.name,
+      size: file.size,
+      sender: store.user,
+      receiver,
+      transferredByte: 0,
+      buffers: [],
+      time: ''
+    })
+  }
 
-  appStore.connectRTC()
-  appStore.createOffer(receiver.id)
+  store.connectRTC()
+  store.createOffer(receiver.id)
 }
 </script>
 

@@ -17,24 +17,9 @@ export const useAppStore = defineStore('app', () => {
   let receiveDataChannel: RTCDataChannel | null = null
   const dataChannelReady = ref(false)
   const showTranfer = ref(false) // 是否接收到文件
-  const tranferInfo = ref<ITranferInfo>({
-    name: '',
-    size: 0,
-    sender: {
-      id: 0,
-      name: '',
-      type: '',
-    },
-    receiver: {
-      id: 0,
-      name: '',
-      type: '',
-    },
-    transferredByte: 0,
-    buffers: [],
-    time: ''
-  })
-  const tranferFile = ref<File>()
+  const tranferInfoQueue = ref<ITranferInfo[]>([])
+  const tranferFileQueue = ref<File[]>([])
+  const queueIndex = ref(0)
   const isShowSend = ref(false)
   const showRegister = ref(false)
   const typeIconMap: { [key: string]: string } = {
@@ -110,12 +95,8 @@ export const useAppStore = defineStore('app', () => {
             type: 'offer',
             user: user.value,
             data: {
-              user: user.value,
-              type: '',
-              data: {
-                receive: id,
-                description
-              }
+              receive: id,
+              description
             }
           })
         }
@@ -137,12 +118,8 @@ export const useAppStore = defineStore('app', () => {
           type: 'answer',
           user: user.value,
           data: {
-            type: '',
-            user: user.value,
-            data: {
-              sender: data.sender,
-              description: JSON.stringify(RTC!.localDescription)
-            }
+            sender: data.sender,
+            description: JSON.stringify(RTC!.localDescription)
           }
         })
       }
@@ -153,57 +130,66 @@ export const useAppStore = defineStore('app', () => {
   };
   const receiveFile = (data: ArrayBuffer) => {
     if (typeof data === "string") {
-      const fileInfo: ITranferInfo = JSON.parse(data);
-      tranferInfo.value.size = fileInfo.size;
-      tranferInfo.value.name = fileInfo.name;
-      tranferInfo.value.sender = fileInfo.sender
-      tranferInfo.value.receiver = fileInfo.receiver
-      tranferInfo.value.transferredByte = 0
-      tranferInfo.value.buffers.length = 0
-      tranferInfo.value.time = fileInfo.time
-      showTranfer.value = true
+      const { type, data: _data } = JSON.parse(data);
+      switch (type) {
+        case 'tranferInfoQueue':
+          tranferInfoQueue.value = _data
+          showTranfer.value = true
+          break
+        case 'queueIndex':
+          queueIndex.value = _data
+          break
+      }
       return;
     }
-    tranferInfo.value.buffers.push(data); // 数据块
-    tranferInfo.value.transferredByte += data.byteLength; // 已接收的字节数
+    const tranferInfo = tranferInfoQueue.value[queueIndex.value]
+    tranferInfo.buffers.push(data); // 数据块
+    tranferInfo.transferredByte += data.byteLength; // 已接收的字节数
 
-    if (tranferInfo.value.size === tranferInfo.value.transferredByte) {
-      download(tranferInfo.value);
+    if (tranferInfo.size === tranferInfo.transferredByte) {
+      download(tranferInfo);
     }
   };
   const sendFile = async () => {
-    if (!tranferFile.value) return
+    if (!tranferFileQueue.value.length) return
     isShowSend.value = false
-    const now = new Date()
-    tranferInfo.value.time = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`
     sendDataChannel!.send(JSON.stringify({
-      name: tranferFile.value.name,
-      size: tranferFile.value.size,
-      sender: tranferInfo.value.sender,
-      receiver: tranferInfo.value.receiver,
-      time: tranferInfo.value.time
-    }));
+      type: 'tranferInfoQueue',
+      data: tranferInfoQueue.value
+    }))
 
-    let offset = 0;
-    let buffer: ArrayBuffer;
-    const chunkSize = RTC!.sctp?.maxMessageSize || 65535;
-    const rawFile = tranferFile.value
-    while (offset < rawFile.size) {
-      const slice = rawFile.slice(offset, offset + chunkSize);
-      buffer =
-        typeof slice.arrayBuffer === "function"
-          ? await slice.arrayBuffer()
-          : await readAsArrayBuffer(slice);
-      if (sendDataChannel!.bufferedAmount > chunkSize) {
-        await new Promise((resolve) => {
-          sendDataChannel!.onbufferedamountlow = resolve;
-        });
+    for (let i = 0; i < tranferFileQueue.value.length; i++) {
+      queueIndex.value = i
+      sendDataChannel!.send(JSON.stringify({
+        type: 'queueIndex',
+        data: queueIndex.value
+      }))
+      const rawFile = tranferFileQueue.value[i]
+      let offset = 0;
+      let buffer: ArrayBuffer;
+      const chunkSize = RTC!.sctp?.maxMessageSize || 65535;
+      while (offset < rawFile.size) {
+        const slice = rawFile.slice(offset, offset + chunkSize);
+        buffer =
+          typeof slice.arrayBuffer === "function"
+            ? await slice.arrayBuffer()
+            : await readAsArrayBuffer(slice);
+        if (sendDataChannel!.bufferedAmount > chunkSize) {
+          await new Promise((resolve) => {
+            sendDataChannel!.onbufferedamountlow = resolve;
+          });
+        }
+        sendDataChannel!.send(buffer);
+        offset += buffer.byteLength;
+        tranferInfoQueue.value[i].transferredByte = offset
       }
-      sendDataChannel!.send(buffer);
-      offset += buffer.byteLength;
-      tranferInfo.value.transferredByte = offset
     }
   };
+  const resetQueue = () => {
+    tranferInfoQueue.value.length = 0
+    tranferFileQueue.value.length = 0
+    queueIndex.value = 0
+  }
   return {
     user,
     userList,
@@ -214,11 +200,12 @@ export const useAppStore = defineStore('app', () => {
     receiveDataChannel,
     dataChannelReady,
     showTranfer,
-    tranferFile,
-    tranferInfo,
     isShowSend,
     showRegister,
     typeIconMap,
+    tranferInfoQueue,
+    tranferFileQueue,
+    queueIndex,
     initConnection,
     sendMessage,
     sendBlobMessage,
@@ -227,5 +214,6 @@ export const useAppStore = defineStore('app', () => {
     createAnswer,
     receiveFile,
     sendFile,
+    resetQueue,
   }
 })

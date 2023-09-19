@@ -7,24 +7,24 @@
       </div>
       <div class="px-7 text-[#666]">
         <div class="grid grid-cols-1 gap-y-2 py-6">
-          <span class="truncate ">文件名称：{{ store.tranferInfo.name }}</span>
-          <span>文件大小：{{ fmtSize(store.tranferInfo.size) }}</span>
+          <span>传输队列：{{ (queueIndex + 1) }}/{{ tranferInfoQueue.length }}</span>
+          <span class="truncate ">文件名称：{{ tranferInfo.name }}</span>
+          <span>文件大小：{{ fmtSize(tranferInfo.size) }}</span>
           <p v-if="!isSender" class="flex items-center">
             <span>发送设备：</span>
-            <Icon :icon="store.typeIconMap[store.tranferInfo.sender.type]" class-name="w-4 h-4 mr-1" />
-            <span>{{ store.tranferInfo.sender.name }}</span>
+            <Icon :icon="typeIconMap[tranferInfo.sender.type]" class-name="w-4 h-4 mr-1" />
+            <span>{{ tranferInfo.sender.name }}</span>
           </p>
           <p v-if="isSender" class="flex items-center">
             <span>接收设备：</span>
-            <Icon :icon="store.typeIconMap[store.tranferInfo.receiver.type]" class-name="w-4 h-4 mr-1" />
-            <span>{{ store.tranferInfo.receiver.name }}</span>
+            <Icon :icon="typeIconMap[tranferInfo.receiver.type]" class-name="w-4 h-4 mr-1" />
+            <span>{{ tranferInfo.receiver.name }}</span>
           </p>
-          <span v-if="store.tranferInfo.time">{{ isSender ? '发送' : '接收' }}时间：{{ store.tranferInfo.time }}</span>
-          <span>传输状态：{{ state }}</span>
+          <span v-if="tranferInfo.time">{{ isSender ? '发送' : '接收' }}时间：{{ tranferInfo.time }}</span>
         </div>
         <div>
           <div class="flex justify-between text-xs mb-1 text-[#999]">
-            <span>已传输字节：{{ store.tranferInfo.transferredByte }}/{{ store.tranferInfo.size }}</span>
+            <span>已传输字节：{{ tranferInfo.transferredByte }}/{{ tranferInfo.size }}</span>
             <span>{{ progress }}%</span>
           </div>
           <div class=" relative h-3 bg-[#E0FFEF]">
@@ -32,7 +32,7 @@
           </div>
         </div>
         <div class="flex justify-center gap-x-2 pt-10 pb-4">
-          <Button v-show="store.isShowSend && store.dataChannelReady" @click="store.sendFile">开始传输</Button>
+          <Button v-show="isShowSend && dataChannelReady" @click="store.sendFile">开始传输</Button>
         </div>
       </div>
     </div>
@@ -41,30 +41,34 @@
 <script setup lang="ts">
 import { useAppStore } from '@/stores/app';
 import Button from './Button.vue';
-import { computed } from 'vue';
+import { computed, toRefs } from 'vue';
 import { fmtSize } from '@/utils'
 import Icon from './Icon.vue';
 
 const store = useAppStore()
+const {
+  tranferInfoQueue,
+  queueIndex,
+  typeIconMap,
+  isShowSend,
+  dataChannelReady,
+  user,
+  showTranfer
+} = toRefs(store)
 // 传输进度
 const progress = computed(() => {
-  return Math.round((store.tranferInfo.transferredByte / store.tranferInfo.size * 100))
+  const { transferredByte, size } = tranferInfoQueue.value[queueIndex.value]
+  return Math.round((transferredByte / size * 100))
 })
-const state = computed(() => {
-  if (progress.value === 100) {
-    return '已下载'
-  } else if (store.tranferInfo.transferredByte > 0) {
-    return '正在传输'
-  } else {
-    return '等待传输'
-  }
+const tranferInfo = computed(() => {
+  return tranferInfoQueue.value[queueIndex.value]
 })
 const isSender = computed(() => {
-  return store.user.id === store.tranferInfo.sender.id
+  return user.value.id === tranferInfo.value.sender.id
 })
 const close = () => {
-  store.isShowSend = false
-  store.showTranfer = false
+  isShowSend.value = false
+  showTranfer.value = false
 }
 </script>
 
