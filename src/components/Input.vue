@@ -1,6 +1,6 @@
 <template>
   <div class="input-wrap border-t border-t-slate-300 ">
-    <div class="h-full flex flex-col sm:hidden bg-white">
+    <div class="h-full flex-col pc bg-white">
       <div class="flex-1 px-5 py-3">
         <textarea ref="textareaRef" v-model="content" placeholder="Enter发送，Ctrl+Enter换行"
           class="w-full h-full outline-0 resize-none" @keydown="notAllowEnter"></textarea>
@@ -9,7 +9,7 @@
         <Button @click="send">发送</Button>
       </div>
     </div>
-    <div class="h-full flex items-center md:hidden bg-[#F5F5F5] px-4 py-2">
+    <div class="h-full items-center mobile bg-[#F5F5F5] px-4 py-2">
       <div class="flex-1 bg-white h-full px-2 rounded">
         <input ref="textareaRef" v-model="content" placeholder="发送消息" class="w-full h-full outline-0"
           @keydown="notAllowEnter" />
@@ -69,6 +69,22 @@ const textareaRef = ref<HTMLTextAreaElement>()
 
   @media screen and (max-width: 500px) {
     height: 60px;
+  }
+}
+
+.pc {
+  display: flex;
+
+  @media screen and (max-width: 500px) {
+    display: none;
+  }
+}
+
+.mobile {
+  display: flex;
+
+  @media screen and (min-width: 500px) {
+    display: none;
   }
 }
 </style>
