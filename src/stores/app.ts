@@ -1,6 +1,6 @@
 import { ref, shallowRef } from 'vue'
 import { defineStore } from 'pinia'
-import { download, readAsArrayBuffer } from '@/utils'
+import { download, readAsArrayBuffer, debug } from '@/utils'
 
 let ws: WebSocket
 export const useAppStore = defineStore('app', () => {
@@ -29,9 +29,11 @@ export const useAppStore = defineStore('app', () => {
     'iPhone': 'iPhone',
     'iPad': 'iPad',
   }
+  let isReceiveAnswer = false
   // 初始化websocket链接
-  const initConnection = () => {
-    ws = new WebSocket(`ws://192.168.3.20:1060/chat?name=${user.value.name}&type=${user.value.type}`)
+  const initConnection = (serverUrl: string) => {
+    if (user.value.id) return
+    ws = new WebSocket(`ws://${serverUrl}/chat?name=${user.value.name}&type=${user.value.type}`)
     ws.onopen = () => {
       console.log('ws open');
     }
@@ -57,10 +59,13 @@ export const useAppStore = defineStore('app', () => {
         contentList.value.push({ type, data, user: _user })
         break
       case 'receiveOffer':
+        debug({ user: user.value.id, msg: 'receiveOffer' })
         connectRTC()
         createAnswer(data)
         break
       case 'receiveAnswer':
+        if (isReceiveAnswer) return
+        isReceiveAnswer = true
         RTC!.setRemoteDescription(JSON.parse(data.description));
         break
     }
@@ -75,7 +80,7 @@ export const useAppStore = defineStore('app', () => {
   const connectRTC = () => {
     RTC = new RTCPeerConnection();
     RTC.addEventListener("datachannel", (event: RTCDataChannelEvent) => {
-      console.log('datachannel: receive data');
+      console.log('datachannel event: ', event);
       receiveDataChannel = event.channel;
       dataChannelReady.value = true
       receiveDataChannel.onmessage = (e) => {
@@ -88,7 +93,9 @@ export const useAppStore = defineStore('app', () => {
   const createOffer = async (id: number) => {
     // 这个事件会触发多次
     RTC!.onicecandidate = async (event: RTCPeerConnectionIceEvent) => {
-      if (event.candidate) {
+      console.log('onicecandidate createOffer:', event);
+
+      if (event.candidate !== null) {
         const description = JSON.stringify(RTC!.localDescription);
         if (description) {
           sendMessage({
@@ -100,8 +107,6 @@ export const useAppStore = defineStore('app', () => {
             }
           })
         }
-      } else {
-        console.log("候选人收集完成！");
       }
     };
     const offer = await RTC!.createOffer();
@@ -113,7 +118,9 @@ export const useAppStore = defineStore('app', () => {
   }) => {
     const offer = JSON.parse(data.description);
     RTC!.onicecandidate = async (event) => {
-      if (event.candidate) {
+      console.log('onicecandidate createAnswer:', event);
+      debug({ user: user.value.id, msg: 'answer', candidate: event.candidate })
+      if (event.candidate !== null) {
         sendMessage({
           type: 'answer',
           user: user.value,
@@ -127,6 +134,7 @@ export const useAppStore = defineStore('app', () => {
     await RTC!.setRemoteDescription(offer);
     const answer = await RTC!.createAnswer();
     await RTC!.setLocalDescription(answer);
+    debug({ user: user.value.id, msg: 'createAnswer', })
   };
   const receiveFile = (data: ArrayBuffer) => {
     if (typeof data === "string") {

@@ -31,14 +31,15 @@ onMounted(() => {
   getUserInfo()
 })
 const getUserInfo = () => {
-  if (!localStorage.getItem('open-chat:user_info')) {
+  if (!localStorage.getItem('open-chat:user_info') || !localStorage.getItem('open-chat:server_url')) {
     appStore.showRegister = true
     return
   }
   const userInfo = JSON.parse(localStorage.getItem('open-chat:user_info') as string)
+  const serverUrl = localStorage.getItem('open-chat:server_url') as string
   appStore.user.name = userInfo.name
   appStore.user.type = userInfo.type
-  appStore.initConnection()
+  appStore.initConnection(serverUrl)
 }
 
 </script>

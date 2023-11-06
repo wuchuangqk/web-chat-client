@@ -36,3 +36,13 @@ export const fmtSize = (bytes: number = 0) => {
   }
   return result?.toFixed(2) + unit;
 }
+
+export const debug = (data: any) => {
+  // fetch('http://192.168.3.20:1060/log', {
+  //   method: 'POST',
+  //   body: JSON.stringify(data || {}),
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   }
+  // })
+}
