@@ -45,7 +45,7 @@ export const debug = (data: any) => {
       method: 'POST',
       body: JSON.stringify(data || {}),
       headers: {
-        'Content-Type': 'application/json;charset=utf8'
+        'Content-Type': 'application/json;charset=utf-8'
       }
     })
   }
