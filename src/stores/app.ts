@@ -29,6 +29,7 @@ export const useAppStore = defineStore('app', () => {
     'iPhone': 'iPhone',
     'iPad': 'iPad',
   }
+  
   let isReceiveAnswer = false
   // 初始化websocket链接
   const initConnection = (serverUrl: string) => {
@@ -198,6 +199,17 @@ export const useAppStore = defineStore('app', () => {
     tranferFileQueue.value.length = 0
     queueIndex.value = 0
   }
+  const listenPage = () => {
+    document.addEventListener('visibilitychange', () => {
+      debug({
+        visibilityState: document.visibilityState,
+        ws: ws.readyState
+      })
+      if (document.visibilityState === 'visible') {
+
+      }
+    })
+  }
   return {
     user,
     userList,
@@ -223,5 +235,6 @@ export const useAppStore = defineStore('app', () => {
     receiveFile,
     sendFile,
     resetQueue,
+    listenPage,
   }
 })

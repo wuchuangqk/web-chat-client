@@ -1,8 +1,7 @@
 <template>
   <div class=" absolute left-0 right-0 bottom-0 overflow-x-auto hidden-scrollbar">
     <div class="flex gap-1 p-2">
-      <div v-for="user in userList" class=" rounded-full py-1 px-2 flex items-center shrink-0 text-white"
-        :class="user.color">
+      <div v-for="user in userList" class=" rounded-full py-1 px-2 flex items-center shrink-0 text-white">
         <span>{{ getName(user) }}</span>
       </div>
     </div>

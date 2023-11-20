@@ -29,6 +29,7 @@ import { onMounted } from 'vue';
 const appStore = useAppStore()
 onMounted(() => {
   getUserInfo()
+  appStore.listenPage()
 })
 const getUserInfo = () => {
   if (!localStorage.getItem('open-chat:user_info') || !localStorage.getItem('open-chat:server_url')) {

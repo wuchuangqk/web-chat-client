@@ -38,11 +38,15 @@ export const fmtSize = (bytes: number = 0) => {
 }
 
 export const debug = (data: any) => {
-  // fetch('http://192.168.3.20:1060/log', {
-  //   method: 'POST',
-  //   body: JSON.stringify(data || {}),
-  //   headers: {
-  //     'Content-Type': 'application/json'
-  //   }
-  // })
+  if (import.meta.env.DEV) {
+    const serverUrl = localStorage.getItem('open-chat:server_url')
+    if (!serverUrl) return
+    fetch(`http://${serverUrl}/log`, {
+      method: 'POST',
+      body: JSON.stringify(data || {}),
+      headers: {
+        'Content-Type': 'application/json;charset=utf8'
+      }
+    })
+  }
 }
