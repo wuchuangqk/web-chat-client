@@ -40,7 +40,7 @@ const send = () => {
   const message = {
     type: 'message',
     data: value,
-    user: appStore.user
+    userId: appStore.user.id
   }
   appStore.contentList.push(message)
   appStore.sendMessage(message)

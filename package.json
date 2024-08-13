@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check build-only",
+    "dev": "vite --host",
     "preview": "vite preview",
-    "build-only": "vite build",
+    "build": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
     "pinia": "^2.1.6",
-    "vue": "^3.3.4"
+    "socket.io-client": "^4.7.5",
+    "vue": "^3.3.4",
+    "webrtc-adapter": "^8.2.3"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.0",

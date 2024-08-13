@@ -1,3 +1,5 @@
+export * from './SendDataChannel'
+
 export const download = async (data: ITranferInfo) => {
   const link = window.URL.createObjectURL(
     new Blob(data.buffers, { type: "arrayBuffer" })
@@ -38,10 +40,10 @@ export const fmtSize = (bytes: number = 0) => {
 }
 
 export const debug = (data: any) => {
-  if (import.meta.env.DEV) {
+  if (true || import.meta.env.DEV) {
     const serverUrl = localStorage.getItem('open-chat:server_url')
     if (!serverUrl) return
-    fetch(`http://${serverUrl}/log`, {
+    fetch(`http://${serverUrl}/debug`, {
       method: 'POST',
       body: JSON.stringify(data || {}),
       headers: {

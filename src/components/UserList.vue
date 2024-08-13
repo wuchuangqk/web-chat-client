@@ -17,6 +17,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useAppStore } from '@/stores/app';
 import Icon from './Icon.vue';
+import { debug } from '@/utils'
 
 const store = useAppStore()
 const fileUploaderRef = ref<HTMLInputElement>()
@@ -25,7 +26,8 @@ onMounted(() => {
   fileUploaderRef.value?.addEventListener('change', fileChange)
 })
 const otherUsers = computed(() => {
-  return store.userList.filter(user => user.id !== store.user.id)
+  const userList = Array.from(store.usersMap.values())
+  return userList.filter(user => user.id !== store.user.id)
 })
 const chooseFile = (user: IUser) => {
   receiver = user
@@ -35,6 +37,14 @@ const chooseFile = (user: IUser) => {
 const fileChange = (event: Event) => {
   const target = event!.target as HTMLInputElement
   if (!target.files) return
+  let arr = []
+  for (let i = 0; i < target.files.length; i++) {
+    arr.push({
+      name: target.files[i].name,
+      type: target.files[i].type
+    })
+  }
+  debug({ files: arr })
   prepareTransfer(target.files)
 }
 // 拖拽上传
@@ -69,8 +79,7 @@ const prepareTransfer = (files: FileList) => {
     })
   }
 
-  store.connectRTC()
-  store.createOffer(receiver.id)
+  store.createSendConnection(receiver.id)
 }
 </script>
 

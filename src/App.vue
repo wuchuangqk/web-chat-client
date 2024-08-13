@@ -3,6 +3,7 @@
     <Nav />
     <div v-show="appStore.activeTab === 0" class="flex-1 overflow-hidden flex flex-col">
       <Chat />
+      <OnlineUsers />
       <Input />
     </div>
     <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center bg-white">
@@ -24,12 +25,13 @@ import FileTranfer from './components/FileTranfer.vue';
 import Nav from './components/Nav/index.vue';
 import UserList from './components/UserList.vue';
 import UserRegister from './components/UserRegister.vue';
+import OnlineUsers from './components/OnlineUsers.vue';
 import { onMounted } from 'vue';
 
 const appStore = useAppStore()
 onMounted(() => {
   getUserInfo()
-  appStore.listenPage()
+  // appStore.listenPage()
 })
 const getUserInfo = () => {
   if (!localStorage.getItem('open-chat:user_info') || !localStorage.getItem('open-chat:server_url')) {
@@ -37,10 +39,9 @@ const getUserInfo = () => {
     return
   }
   const userInfo = JSON.parse(localStorage.getItem('open-chat:user_info') as string)
-  const serverUrl = localStorage.getItem('open-chat:server_url') as string
   appStore.user.name = userInfo.name
   appStore.user.type = userInfo.type
-  appStore.initConnection(serverUrl)
+  appStore.initConnection()
 }
 
 </script>
@@ -58,4 +59,3 @@ const getUserInfo = () => {
   }
 }
 </style>
-

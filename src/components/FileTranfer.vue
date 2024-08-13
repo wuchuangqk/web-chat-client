@@ -24,7 +24,7 @@
         </div>
         <div>
           <div class="flex justify-between text-xs mb-1 text-[#999]">
-            <span>已传输字节：{{ tranferInfo.transferredByte }}/{{ tranferInfo.size }}</span>
+            <span>已传输字节：{{ tranferInfo.transferredByte }}</span>
             <span>{{ progress }}%</span>
           </div>
           <div class=" relative h-3 bg-[#E0FFEF]">
@@ -32,7 +32,7 @@
           </div>
         </div>
         <div class="flex justify-center gap-x-2 pt-10 pb-4">
-          <Button v-show="isShowSend && dataChannelReady" @click="store.sendFile">开始传输</Button>
+          <Button v-show="isShowSend && isDataChannelReady" @click="store.sendFile">开始传输</Button>
         </div>
       </div>
     </div>
@@ -51,7 +51,7 @@ const {
   queueIndex,
   typeIconMap,
   isShowSend,
-  dataChannelReady,
+  isDataChannelReady,
   user,
   showTranfer
 } = toRefs(store)

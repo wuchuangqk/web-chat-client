@@ -2,7 +2,8 @@
 interface IMessage2 {
   type: string
   data: any
-  user: IUser
+  // user: IUser
+  userId: string
 }
 interface IContent {
   content: striing
@@ -12,8 +13,7 @@ interface IContent {
 }
 interface IUser {
   name: string
-  id: number
-  // color: string
+  id: string
   type: string
 }
 interface IFileSender {

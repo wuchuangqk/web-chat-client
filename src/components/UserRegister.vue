@@ -39,6 +39,7 @@ import { reactive } from 'vue'
 import Icon from './Icon.vue';
 import Button from './Button.vue';
 import { useAppStore } from '@/stores/app';
+import User from './User.vue';
 
 const appStore = useAppStore()
 const formData = reactive({
@@ -66,10 +67,10 @@ const submit = () => {
   appStore.showRegister = false
   if (!appStore.user.id) {
     // 是否初次连接
-    appStore.initConnection(formData.serverUrl)
+    appStore.initConnection()
   } else {
     // 通知其他用户
-    appStore.sendMessage({ type: 'update-user', data: null, user: appStore.user })
+    appStore.updateUserInfo()
   }
 }
 </script>
