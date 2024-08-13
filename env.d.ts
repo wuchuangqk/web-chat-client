@@ -22,12 +22,17 @@ interface IFileSender {
   receiver: string // 接收设备
   transferredByte: number // 已传输字节数
 }
-interface ITranferInfo {
+interface ITranferQueue {
   name: string,
   size: number,
-  sender: IUser // 发送设备
-  receiver: IUser // 接收设备
   transferredByte: number // 已传输字节数
-  buffers: ArrayBuffer[] // 数据块
+  chunks: ArrayBuffer[] // 数据块
   time: string
+  progress: number
+}
+
+interface ITranferMeta {
+  sender: string
+  receiver: string
+  queue: ITranferQueue[]
 }

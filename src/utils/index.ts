@@ -1,12 +1,10 @@
 export * from './SendDataChannel'
 
-export const download = async (data: ITranferInfo) => {
-  const link = window.URL.createObjectURL(
-    new Blob(data.buffers, { type: "arrayBuffer" })
-  );
+export const download = async (file: ITranferQueue) => {
+  const link = window.URL.createObjectURL(new Blob(file.chunks, { type: 'arrayBuffer' }));
   const a = document.createElement("a");
   a.href = link;
-  a.download = data.name || "download";
+  a.download = file.name || "download";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -40,15 +38,15 @@ export const fmtSize = (bytes: number = 0) => {
 }
 
 export const debug = (data: any) => {
-  if (true || import.meta.env.DEV) {
-    const serverUrl = localStorage.getItem('open-chat:server_url')
-    if (!serverUrl) return
-    fetch(`http://${serverUrl}/debug`, {
-      method: 'POST',
-      body: JSON.stringify(data || {}),
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      }
-    })
-  }
+  // if (import.meta.env.DEV) {
+  //   const serverUrl = localStorage.getItem('open-chat:server_url')
+  //   if (!serverUrl) return
+  //   fetch(`http://${serverUrl}/debug`, {
+  //     method: 'POST',
+  //     body: JSON.stringify(data || {}),
+  //     headers: {
+  //       'Content-Type': 'application/json;charset=utf-8'
+  //     }
+  //   })
+  // }
 }

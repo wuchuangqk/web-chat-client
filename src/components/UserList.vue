@@ -61,25 +61,27 @@ const preventDefault = (event: DragEvent) => {
 }
 // 预处理传输格式，建立链接
 const prepareTransfer = (files: FileList) => {
-  store.isShowSend = true
-  store.showTranfer = true
-
   store.resetQueue()
+  const queue = []
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
     store.tranferFileQueue.push(file)
-    store.tranferInfoQueue.push({
+    queue.push({
       name: file.name,
       size: file.size,
-      sender: store.user,
-      receiver,
       transferredByte: 0,
-      buffers: [],
-      time: ''
+      chunks: [],
+      time: '',
+      progress: 0,
     })
   }
-
-  store.createSendConnection(receiver.id)
+  store.tranferMeta = {
+    sender: store.user.id,
+    receiver: receiver.id,
+    queue
+  }
+  store.isShowSend = true
+  store.showTranfer = true
 }
 </script>
 
