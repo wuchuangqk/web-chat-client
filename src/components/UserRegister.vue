@@ -39,13 +39,12 @@ import { reactive } from 'vue'
 import Icon from './Icon.vue';
 import Button from './Button.vue';
 import { useAppStore } from '@/stores/app';
-import User from './User.vue';
 
 const appStore = useAppStore()
 const formData = reactive({
   name: appStore.user.name,
   type: appStore.user.type || 'PC',
-  serverUrl: localStorage.getItem('open-chat:server_url') || '',
+  serverUrl: localStorage.getItem('open-chat:server_url') || window.location.host,
 })
 const typeList = [
   { name: 'PC', icon: 'pc' },
