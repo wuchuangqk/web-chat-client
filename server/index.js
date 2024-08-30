@@ -1,6 +1,7 @@
 import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
+import url from 'node:url'
 
 const app = express()
 const server = createServer(app)
@@ -11,7 +12,7 @@ const io = new Server(server, {
   maxHttpBufferSize: 1024 * 1024 * 10
 })
 
-app.use(express.static('dist'))
+app.use(express.static(url.fileURLToPath(new URL('../dist', import.meta.url))))
 
 const users = new Map()
 const socketMap = new Map()
