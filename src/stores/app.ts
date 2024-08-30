@@ -31,7 +31,8 @@ export const useAppStore = defineStore('app', () => {
   let socket: Socket
   const initConnection = () => {
     const serverUrl = localStorage.getItem('open-chat:server_url') as string
-    socket = io(serverUrl)
+    const port = localStorage.getItem('open-chat:port') as string
+    socket = io(serverUrl + ':' + port)
     // 建立连接
     socket.on('connect', () => {
       console.log('connect', socket.id);

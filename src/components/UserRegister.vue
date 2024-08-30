@@ -12,7 +12,12 @@
         </div>
         <div class="mt-6">
           <p class="mb-2">后台地址</p>
-          <input type="text" v-model.trim="formData.serverUrl" placeholder="例如：192.168.3.20:1060"
+          <input type="text" v-model.trim="formData.serverUrl" placeholder="例如：192.168.3.20"
+            class="h-10 w-full rounded border px-2">
+        </div>
+        <div class="mt-6">
+          <p class="mb-2">后台端口</p>
+          <input type="text" v-model.trim="formData.port" placeholder="例如：1060"
             class="h-10 w-full rounded border px-2">
         </div>
         <div class="mt-6">
@@ -44,7 +49,8 @@ const appStore = useAppStore()
 const formData = reactive({
   name: appStore.user.name,
   type: appStore.user.type || 'PC',
-  serverUrl: localStorage.getItem('open-chat:server_url') || window.location.host,
+  serverUrl: localStorage.getItem('open-chat:server_url') || window.location.hostname,
+  port: localStorage.getItem('open-chat:port') || '1061',
 })
 const typeList = [
   { name: 'PC', icon: 'pc' },
@@ -58,11 +64,12 @@ const close = () => {
   appStore.showRegister = false
 }
 const submit = () => {
-  if (!formData.name || !formData.type || !formData.serverUrl) return
+  if (!formData.name || !formData.type || !formData.serverUrl || !formData.port) return
   appStore.user.name = formData.name
   appStore.user.type = formData.type
   localStorage.setItem('open-chat:user_info', JSON.stringify(appStore.user))
   localStorage.setItem('open-chat:server_url', formData.serverUrl)
+  localStorage.setItem('open-chat:port', formData.port)
   appStore.showRegister = false
   if (!appStore.user.id) {
     // 是否初次连接

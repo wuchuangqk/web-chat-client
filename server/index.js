@@ -1,8 +1,6 @@
 import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
-import { pathToFileURL } from 'node:url'
-import path from 'node:path'
 
 const app = express()
 const server = createServer(app)
@@ -20,13 +18,14 @@ const socketMap = new Map()
 
 io.on('connection', (socket) => {
   let onlineCount = io.engine.clientsCount
-  console.log(`新用户${socket.id}加入，当前在线人数${onlineCount}`);
+  console.log(`[${socket.id}]新用户加入，在线人数：${onlineCount}`);
   socketMap.set(socket.id, socket)
 
   // 用户断开连接
   socket.on('disconnect', () => {
     onlineCount = io.engine.clientsCount
-    console.log(`用户${socket.id}断开连接，当前在线人数${onlineCount}`);
+    const user = users.get(socket.id)
+    console.log(`[${socket.id}]${user.name}断开连接，在线人数：${onlineCount}`);
     users.delete(socket.id)
     socket.broadcast.emit('members', Array.from(users.values()))
     socketMap.delete(socket.id)
