@@ -63,10 +63,15 @@ export const useAppStore = defineStore('app', () => {
 
     // 文件传输
     socket.on('tranfer-file', handleTransferFile)
+    socket.on('ack', onAck)
+  }
+  // 一个ack表示一个来回
+  // 接收方收到数据了
+  let ackCallback: Function
+  const onAck = () => {
+    ackCallback && ackCallback()
   }
   const handleTransferFile = ({ id, type, data }: { id: string, type: string, data: any }) => {
-    console.log(id, type, data);
-
     switch (type) {
       case 'queue':
         tranferMeta.value = {
@@ -163,7 +168,7 @@ export const useAppStore = defineStore('app', () => {
         })
       }
       send()
-      socket.on('ack', send)
+      ackCallback = send
     }
     jobQueue()
   }
