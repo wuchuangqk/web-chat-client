@@ -29,6 +29,9 @@ interface ITranferQueue {
   chunks: ArrayBuffer[] // 数据块
   time: string
   progress: number
+  isDone: boolean
+  startTime: Date | null
+  useTime: number | null
 }
 
 interface ITranferMeta {

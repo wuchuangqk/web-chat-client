@@ -73,6 +73,9 @@ const prepareTransfer = (files: FileList) => {
       chunks: [],
       time: '',
       progress: 0,
+      startTime: null,
+      useTime: null,
+      isDone: false,
     })
   }
   store.tranferMeta = {

@@ -22,7 +22,10 @@
         </div>
         <div v-for="queue in tranferMeta.queue" :key="queue.name" class="p-2 bg-[#F0FDF4] rounded border mb-2">
           <div class="break-all mb-1">{{ queue.name }}</div>
-          <div class="text-xs text-[#999] mb-1">{{ fmtSize(queue.size) }}</div>
+          <div class="text-xs text-[#999] mb-1 flex justify-between">
+            <span>{{ fmtSize(queue.size) }}</span>
+            <span v-if="queue.isDone">传输用时：{{ queue.useTime }}秒</span>
+          </div>
           <div>
             <div class="flex justify-between text-xs mb-1 text-[#999]">
               <span>已传输字节：{{ queue.transferredByte }}/{{ queue.size }}</span>

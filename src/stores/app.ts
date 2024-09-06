@@ -1,8 +1,10 @@
-import { ref, shallowRef } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { download, readAsArrayBuffer, debug, SendDataChannel } from '@/utils'
+import { download, debug } from '@/utils'
 import { io, Socket } from 'socket.io-client'
+import dayjs from 'dayjs'
 
+const CHUNK_SIZE = 1 * 1024 * 1024 // 2MB
 let ws: WebSocket
 export const useAppStore = defineStore('app', () => {
   const user = ref<IUser>({
@@ -85,6 +87,9 @@ export const useAppStore = defineStore('app', () => {
               transferredByte: 0,
               chunks: [],
               progress: 0,
+              startTime: null,
+              useTime: null,
+              isDone: false,
             }
           })
         }
@@ -92,6 +97,8 @@ export const useAppStore = defineStore('app', () => {
         break
       case 'queue-index':
         queueIndex.value = data
+        const currentQueue = tranferMeta.value.queue[queueIndex.value]
+        currentQueue.startTime = new Date()
         break
       case 'blob-chunk':
         const { transferredByte, chunk } = data
@@ -101,6 +108,8 @@ export const useAppStore = defineStore('app', () => {
         currentFile.progress = Math.round((transferredByte / currentFile.size * 100))
         socket.emit('ack', { targetId: id })
         if (currentFile.transferredByte === currentFile.size) {
+          currentFile.useTime = dayjs().diff(currentFile.startTime, 'seconds')
+          currentFile.isDone = true
           download(currentFile);
         }
         break
@@ -143,10 +152,12 @@ export const useAppStore = defineStore('app', () => {
       })
       const currentFile = tranferMeta.value.queue[queueIndex.value]
       const rawFile = tranferFileQueue.value[jobIndex]
-      const chunkSize = 1024 * 1024 // 1MB
       let offset = 0
+      currentFile.startTime = new Date()
       const send = async () => {
         if (offset >= rawFile.size) {
+          currentFile.useTime = dayjs().diff(currentFile.startTime, 'seconds')
+          currentFile.isDone = true
           // 任务完成
           jobIndex++
           if (jobIndex < tranferFileQueue.value.length) {
@@ -154,7 +165,7 @@ export const useAppStore = defineStore('app', () => {
           }
           return
         }
-        const chunk = rawFile.slice(offset, offset + chunkSize);
+        const chunk = rawFile.slice(offset, offset + CHUNK_SIZE);
         offset += chunk.size
         currentFile.transferredByte = offset
         currentFile.progress = Math.round((currentFile.transferredByte / currentFile.size * 100))
