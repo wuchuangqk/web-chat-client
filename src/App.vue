@@ -9,6 +9,7 @@
     <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center bg-white">
       <UserList />
     </div>
+    <div v-if="!appStore.isOnline" class=" hidden sm:block fixed top-11 left-1 px-3 py-1 z-10 bg-[#dddddd] text-sm shadow">离线</div>
   </main>
   <div
     class=" hidden bg-purple-600 bg-fuchsia-600 bg-pink-600 bg-violet-600 bg-sky-600 bg-teal-600 bg-yellow-600 bg-red-600">
@@ -52,6 +53,7 @@ const getUserInfo = () => {
   flex-direction: column;
   overflow: hidden;
   border-radius: 4px;
+  position: relative;
 
   @media screen and (max-width: 600px) {
     width: 100%;
