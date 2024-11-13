@@ -1,5 +1,5 @@
 <template>
-  <div class="flex rounded-full border border-[#D5D5D5] overflow-hidden">
+  <div class=" inline-flex rounded-full border border-[#D5D5D5] overflow-hidden">
     <div v-for="(tab, index) in tabs" :key="tab"
       class=" w-[60px] h-[26px] flex justify-center items-center tab text-[#999]"
       :class="{ active: index === store.activeTab }" @click="store.activeTab = index">{{ tab }}</div>

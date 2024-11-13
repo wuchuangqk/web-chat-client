@@ -29,6 +29,7 @@ export const useAppStore = defineStore('app', () => {
     'iPad': 'iPad',
     '安卓': 'iPad',
   }
+  const isOnline = ref(false)
 
   let socket: Socket
   const initConnection = () => {
@@ -41,10 +42,12 @@ export const useAppStore = defineStore('app', () => {
       user.value.id = socket.id as string
       // 将用户信息同步到后台
       socket.emit('bind-user-info', user.value)
+      isOnline.value = true
     })
     // 断开连接
     socket.on('disconnect', () => {
       console.log('disconnect');
+      isOnline.value = false
     })
     // 文本消息
     socket.on('broadcast:text-message', ({ id, msg }) => {
@@ -212,6 +215,7 @@ export const useAppStore = defineStore('app', () => {
     tranferMeta,
     tranferFileQueue,
     queueIndex,
+    isOnline,
     initConnection,
     sendMessage,
     sendFile,

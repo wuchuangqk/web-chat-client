@@ -2,6 +2,8 @@ import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import url from 'node:url'
+import os from 'node:os'
+import { exec } from 'node:child_process'
 
 const app = express()
 const server = createServer(app)
@@ -57,5 +59,21 @@ io.on('connection', (socket) => {
 
 const port = 1061
 server.listen(port, () => {
-  console.log(`chat server is running at ${port}`);
+  const networks = os.networkInterfaces();
+  let localIP = ''
+  for (const network in networks) {
+    // 只查wifi和网线的ip
+    if (['WLAN'].includes(network)) {
+      // IPv4和非本地地址
+      const address = networks[network].find(val => val.family === 'IPv4' && !val.internal)
+      if (typeof address !== 'undefined') {
+        localIP = address.address
+        break
+      }
+    }
+  }
+  console.log(`chat server is running at ${localIP ? localIP + ':' : ''}${port}`);
+  if (localIP) {
+    exec(`start "" "http://${localIP}:${port}"`)
+  }
 })
