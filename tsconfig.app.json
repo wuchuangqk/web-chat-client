@@ -1,5 +1,4 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
@@ -8,6 +7,14 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "esModuleInterop":true
+    "esModuleInterop":true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
   }
 }
