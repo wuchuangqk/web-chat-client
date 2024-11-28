@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div ref="refenceRef" @click="handleClick">
+  <div class=" relative">
+    <div ref="refenceRef" @click="handleClick" @mouseenter="handleMouseenter" @mouseleave="handleMouseleave">
       <slot name="refence" />
     </div>
     <div v-show="show" ref="contentRef" class="content">
@@ -9,16 +9,26 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onUnmounted, onMounted } from 'vue'
 import { createPopper } from '@popperjs/core';
-import { onMounted } from 'vue';
-import { onUnmounted } from 'vue';
+import type { Instance } from '@popperjs/core';
 
 const refenceRef = ref<HTMLElement>(null as unknown as HTMLElement)
 const contentRef = ref()
 const show = ref(false)
+let popperInstance: Instance
 const handleClick = () => {
   show.value = !show.value
+  if (show.value) {
+    popperInstance.update()
+  }
+}
+const handleMouseenter = () => {
+  show.value = true
+  popperInstance.update()
+}
+const handleMouseleave = () => {
+  show.value = false
 }
 const hide = (e: MouseEvent) => {
   if (!refenceRef.value?.contains(e.target as Node) && show.value) {
@@ -26,13 +36,13 @@ const hide = (e: MouseEvent) => {
   }
 }
 onMounted(() => {
-  createPopper(refenceRef.value, contentRef.value, {
-    placement: 'top-start',
+  popperInstance = createPopper(refenceRef.value, contentRef.value, {
+    placement: 'top',
     modifiers: [
       {
         name: 'offset',
         options: {
-          offset: [0, 4],
+          offset: [0, 10],
         }
       },
     ]
@@ -47,6 +57,6 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .content {
   background-color: #fff;
-  @apply text-[#999] text-xs p-1 rounded;
+  @apply text-sm py-1.5 px-2 rounded shadow-md;
 }
 </style>

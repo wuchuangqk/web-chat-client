@@ -1,12 +1,14 @@
 <template>
-  <div class="flex shrink-0 p-1">
-    <!-- <Avatar v-for="user in userList" :key="user.id" :user="user" class="mr-2" /> -->
+  <div class="flex shrink-0 py-1 px-2">
     <ToolTip v-for="user in userList" :key="user.id" class="mr-2">
       <template #refence>
         <Avatar :user="user" />
       </template>
       <template #content>
-        <span>{{ user.name }}</span>
+        <div class=" whitespace-nowrap">
+          <span class=" text-[#999] mr-1">[{{ user.type }}]</span>
+          <span>{{ user.name }}</span>
+        </div>
       </template>
     </ToolTip>
   </div>
