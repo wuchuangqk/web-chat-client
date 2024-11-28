@@ -1,6 +1,6 @@
 <template>
-  <div class="flex shrink-0 py-1 px-2">
-    <ToolTip v-for="user in userList" :key="user.id" class="mr-2">
+  <div class="flex shrink-0 py-1 px-4">
+    <ToolTip v-for="user in userList" :key="user.id" class="mr-3">
       <template #refence>
         <Avatar :user="user" />
       </template>

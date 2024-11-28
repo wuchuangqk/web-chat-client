@@ -50,7 +50,7 @@ const formData = reactive({
   name: appStore.user.name,
   type: appStore.user.type || 'PC',
   serverUrl: localStorage.getItem('open-chat:server_url') || window.location.hostname,
-  port: localStorage.getItem('open-chat:port') || '1061',
+  port: localStorage.getItem('open-chat:port') || window.location.port,
 })
 const typeList = [
   { name: 'PC', icon: 'pc' },

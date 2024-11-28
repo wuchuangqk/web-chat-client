@@ -12,22 +12,27 @@
 import { ref, onUnmounted, onMounted } from 'vue'
 import { createPopper } from '@popperjs/core';
 import type { Instance } from '@popperjs/core';
+import { isMobile } from '@/utils'
 
 const refenceRef = ref<HTMLElement>(null as unknown as HTMLElement)
 const contentRef = ref()
 const show = ref(false)
 let popperInstance: Instance
+
 const handleClick = () => {
+  if (!isMobile) return
   show.value = !show.value
   if (show.value) {
     popperInstance.update()
   }
 }
 const handleMouseenter = () => {
+  if (isMobile) return
   show.value = true
   popperInstance.update()
 }
 const handleMouseleave = () => {
+  if (isMobile) return
   show.value = false
 }
 const hide = (e: MouseEvent) => {
@@ -47,10 +52,10 @@ onMounted(() => {
       },
     ]
   })
-  document.addEventListener('click', hide)
+  isMobile && document.addEventListener('click', hide)
 })
 onUnmounted(() => {
-  document.removeEventListener('click', hide)
+  isMobile && document.removeEventListener('click', hide)
 })
 </script>
 

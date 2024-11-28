@@ -12,9 +12,6 @@
     <div v-if="!appStore.isOnline"
       class=" hidden sm:block fixed top-11 left-1 px-3 py-1 z-10 bg-[#dddddd] text-sm shadow">离线</div>
   </main>
-  <div
-    class=" hidden bg-purple-600 bg-fuchsia-600 bg-pink-600 bg-violet-600 bg-sky-600 bg-teal-600 bg-yellow-600 bg-red-600">
-  </div>
   <FileTranfer v-if="appStore.showTranfer" />
   <UserRegister v-if="appStore.showRegister" />
 </template>

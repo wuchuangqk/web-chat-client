@@ -29,7 +29,9 @@ const startServer = (port) => {
     socket.on('disconnect', () => {
       onlineCount = io.engine.clientsCount
       const user = users.get(socket.id)
-      console.log(`[${socket.id}]${user.name}断开连接，在线人数：${onlineCount}`);
+      if (user) {
+        console.log(`[${socket.id}]${user.name}断开连接，在线人数：${onlineCount}`);
+      }
       users.delete(socket.id)
       socket.broadcast.emit('members', Array.from(users.values()))
       socketMap.delete(socket.id)

@@ -1,3 +1,6 @@
+import MobileDetect from 'mobile-detect'
+import VConsole from 'vconsole'
+
 export * from './SendDataChannel'
 
 export const download = async (file: ITranferQueue) => {
@@ -38,15 +41,23 @@ export const fmtSize = (bytes: number = 0) => {
 }
 
 export const debug = (data: any) => {
-  // if (import.meta.env.DEV) {
-  //   const serverUrl = localStorage.getItem('open-chat:server_url')
-  //   if (!serverUrl) return
-  //   fetch(`http://${serverUrl}/debug`, {
-  //     method: 'POST',
-  //     body: JSON.stringify(data || {}),
-  //     headers: {
-  //       'Content-Type': 'application/json;charset=utf-8'
-  //     }
-  //   })
-  // }
+  if (import.meta.env.DEV) {
+    console.log(data);
+    // const serverUrl = localStorage.getItem('open-chat:server_url')
+    // if (!serverUrl) return
+    // fetch(`http://${serverUrl}/debug`, {
+    //   method: 'POST',
+    //   body: JSON.stringify(data || {}),
+    //   headers: {
+    //     'Content-Type': 'application/json;charset=utf-8'
+    //   }
+    // })
+  }
+}
+
+const md = new MobileDetect(window.navigator.userAgent);
+export const isMobile = md.mobile()
+
+if (import.meta.env.DEV) {
+  new VConsole()
 }
