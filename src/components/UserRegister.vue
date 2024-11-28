@@ -58,7 +58,7 @@ const typeList = [
   { name: '笔记本', icon: 'laptop' },
   { name: 'iPhone', icon: 'iPhone' },
   { name: 'iPad', icon: 'iPad' },
-  { name: '安卓', icon: 'iPad' },
+  { name: '安卓', icon: 'android' },
 ]
 const close = () => {
   appStore.showRegister = false

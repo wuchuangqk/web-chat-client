@@ -27,7 +27,7 @@ export const useAppStore = defineStore('app', () => {
     '笔记本': 'laptop',
     'iPhone': 'iPhone',
     'iPad': 'iPad',
-    '安卓': 'iPad',
+    '安卓': 'android',
   }
   const isOnline = ref(false)
 
