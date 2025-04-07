@@ -5,39 +5,41 @@
         <span class=" text-base">{{ isSender ? '发送文件' : '接收文件' }}</span>
         <Icon icon="Close" class-name="w-4 h-4" @click="close" />
       </div>
-      <div class="px-7 text-[#666]">
-        <div class="grid grid-cols-1 gap-y-2 py-4">
-          <span>传输队列：{{ (queueIndex + 1) }}/{{ tranferMeta.queue.length }}</span>
-          <p v-if="!isSender" class="flex items-center">
-            <span>发送方：</span>
-            <Icon :icon="typeIconMap[sender.type]" class-name="w-4 h-4 mr-1" />
-            <span>{{ sender.name }}</span>
-          </p>
-          <p v-if="isSender" class="flex items-center">
-            <span>接收方：</span>
-            <Icon :icon="typeIconMap[receiver.type]" class-name="w-4 h-4 mr-1" />
-            <span>{{ receiver.name }}</span>
-          </p>
-          <span v-if="currentFile.time">{{ isSender ? '发送' : '接收' }}时间：{{ currentFile.time }}</span>
-        </div>
-        <div v-for="queue in tranferMeta.queue" :key="queue.name" class="p-2 bg-[#F0FDF4] rounded border mb-2">
-          <div class="break-all mb-1">{{ queue.name }}</div>
-          <div class="text-xs text-[#999] mb-1 flex justify-between">
-            <span>{{ fmtSize(queue.size) }}</span>
-            <span v-if="queue.isDone">传输用时：{{ queue.useTime }}秒</span>
+      <div class="max-h-[80vh] overflow-auto">
+        <div class="px-7 text-[#666]">
+          <div class="grid grid-cols-1 gap-y-2 py-4">
+            <span>传输队列：{{ (queueIndex + 1) }}/{{ tranferMeta.queue.length }}</span>
+            <p v-if="!isSender" class="flex items-center">
+              <span>发送方：</span>
+              <Icon :icon="typeIconMap[sender.type]" class-name="w-4 h-4 mr-1" />
+              <span>{{ sender.name }}</span>
+            </p>
+            <p v-if="isSender" class="flex items-center">
+              <span>接收方：</span>
+              <Icon :icon="typeIconMap[receiver.type]" class-name="w-4 h-4 mr-1" />
+              <span>{{ receiver.name }}</span>
+            </p>
+            <span v-if="currentFile.time">{{ isSender ? '发送' : '接收' }}时间：{{ currentFile.time }}</span>
           </div>
-          <div>
-            <div class="flex justify-between text-xs mb-1 text-[#999]">
-              <span>已传输字节：{{ queue.transferredByte }}/{{ queue.size }}</span>
-              <span>{{ queue.progress }}%</span>
+          <div v-for="queue in tranferMeta.queue" :key="queue.name" class="p-2 bg-[#F0FDF4] rounded border mb-2">
+            <div class="break-all mb-1">{{ queue.name }}</div>
+            <div class="text-xs text-[#999] mb-1 flex justify-between">
+              <span>{{ fmtSize(queue.size) }}</span>
+              <span v-if="queue.isDone">传输用时：{{ queue.useTime }}秒</span>
             </div>
-            <div class=" relative h-3 bg-[#c4f5dc]">
-              <div class="h-full bg-[#4EC588]" :style="{ width: `${queue.progress}%` }"></div>
+            <div>
+              <div class="flex justify-between text-xs mb-1 text-[#999]">
+                <span>已传输字节：{{ queue.transferredByte }}/{{ queue.size }}</span>
+                <span>{{ queue.progress }}%</span>
+              </div>
+              <div class=" relative h-3 bg-[#c4f5dc]">
+                <div class="h-full bg-[#4EC588]" :style="{ width: `${queue.progress}%` }"></div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex justify-center gap-x-2 pt-8 pb-4">
-          <Button v-show="isShowSend" @click="store.sendFile">开始传输</Button>
+          <div class="flex justify-center gap-x-2 pt-8 pb-4">
+            <Button v-show="isShowSend" @click="store.sendFile">开始传输</Button>
+          </div>
         </div>
       </div>
     </div>
