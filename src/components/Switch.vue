@@ -1,6 +1,6 @@
 <template>
   <div class="win-radio" :class="{ active }" @click="setActive">
-    <div class="win-radio__label">{{ active ? activedText : unActivedText }}</div>
+    <!-- <div class="win-radio__label">{{ active ? activedText : unActivedText }}</div> -->
     <div ref="outerRef" class="win-radio__outer">
       <div ref="innerRef" class="win-radio__inner" :style="{ left: left + 'px' }"></div>
     </div>
@@ -60,7 +60,7 @@ onMounted(() => {
       background-color: var(--theme-color);
 
       &:hover {
-        background-color: #83d4da;
+        background-color: #3db276;
       }
     }
 
@@ -81,12 +81,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 0 3px;
-  background-color: #2e2e2e;
-  border: 1px solid #a2a2a2;
+  background-color: #DBDBDB;
+  // border: 1px solid #a2a2a2;
   box-sizing: border-box;
 
   &:hover {
-    background-color: #3c3c3c;
 
     .win-radio__inner {
       transform: scale(1.1);
@@ -98,7 +97,7 @@ onMounted(() => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: #cfcfcf;
+  background-color: #fff;
   transform: scale(1.0);
   transition: all 0.1s;
   position: relative;

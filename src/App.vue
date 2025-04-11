@@ -14,7 +14,6 @@
   </main>
   <FileTranfer v-if="appStore.showTranfer" />
   <UserRegister v-if="appStore.showRegister" />
-  <Setting v-if="appStore.showSetting" />
 </template>
 
 <script setup lang="ts">

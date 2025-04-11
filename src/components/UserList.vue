@@ -1,6 +1,14 @@
 <template>
-  <div class="flex-1 flex flex-col pt-12 text-[#333]">
-    <p class=" text-center mb-6 text-[#666]">{{ otherUsers.length }}台其他设备在线</p>
+  <div class="flex-1 flex flex-col pt-2 text-[#333]">
+    <div class="flex justify-between px-8 mb-6">
+      <p class=" text-center text-[#666]">{{ otherUsers.length }}台其他设备在线</p>
+      
+      <div class="flex items-center">
+        <span class="mr-1" :class="[setting.autoAccept ? 'text-[#333]' : 'text-[#c3c3c3]']">自动接收</span>
+        <Switch v-model="setting.autoAccept" @change="setting.save" />
+      </div>
+    </div>
+
     <ul class="grid grid-cols-3 sm:grid-cols-2 gap-8 px-10">
       <li v-for="user in otherUsers" :key="user.id"
         class=" rounded bg-[#F0FDF4] flex flex-col items-center px-4 border pt-1 pb-3" @click="chooseFile(user)"
@@ -16,10 +24,14 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useAppStore } from '@/stores/app';
+import { useSettingStore } from '@/stores/setting';
 import Icon from './Icon.vue';
+import Switch from './Switch.vue';
 import { debug } from '@/utils'
 
 const store = useAppStore()
+const setting = useSettingStore()
+
 const fileUploaderRef = ref<HTMLInputElement>()
 let receiver: IUser
 onMounted(() => {

@@ -140,7 +140,7 @@ export const useAppStore = defineStore('app', () => {
         if (currentFile.transferredByte === currentFile.size) {
           currentFile.useTime = dayjs().diff(currentFile.startTime, 'seconds')
           currentFile.isDone = true
-          // download(currentFile);
+          download(currentFile);
         }
         break
     }
