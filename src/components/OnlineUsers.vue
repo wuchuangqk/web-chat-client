@@ -1,5 +1,6 @@
 <template>
-  <div class="flex shrink-0 py-1 px-4">
+  <div class="flex shrink-0 py-1 px-4 items-center text-[#999]">
+    <span class=" mr-3">{{ store.usersMap.size }}台设备在线</span>
     <ToolTip v-for="user in userList" :key="user.id" class="mr-3">
       <template #refence>
         <Avatar :user="user" />

@@ -14,6 +14,7 @@
   </main>
   <FileTranfer v-if="appStore.showTranfer" />
   <UserRegister v-if="appStore.showRegister" />
+  <Setting v-if="appStore.showSetting" />
 </template>
 
 <script setup lang="ts">
@@ -25,6 +26,7 @@ import Nav from './components/Nav/index.vue';
 import UserList from './components/UserList.vue';
 import UserRegister from './components/UserRegister.vue';
 import OnlineUsers from './components/OnlineUsers.vue';
+import Setting from './components/Setting.vue';
 import { computed, onMounted } from 'vue';
 
 const appStore = useAppStore()

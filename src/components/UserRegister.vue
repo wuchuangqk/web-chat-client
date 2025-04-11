@@ -8,7 +8,7 @@
       <div class="px-8 py-8">
         <div>
           <p class="mb-2">名称</p>
-          <input type="text" v-model.trim="formData.name" class="h-10 w-full rounded border px-2">
+          <input type="text" v-model.trim="formData.name" length="4" class="h-10 w-full rounded border px-2">
         </div>
         <div class="mt-6">
           <p class="mb-2">后台地址</p>

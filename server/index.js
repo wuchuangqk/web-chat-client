@@ -31,6 +31,7 @@ const startServer = (port) => {
       const user = users.get(socket.id)
       if (user) {
         console.log(`[${socket.id}]${user.name}断开连接，在线人数：${onlineCount}`);
+        socket.broadcast.emit('broadcast:notify-message', { msg: `${user.name}断开连接` })
       }
       users.delete(socket.id)
       socket.broadcast.emit('members', Array.from(users.values()))
@@ -45,6 +46,7 @@ const startServer = (port) => {
     socket.on('bind-user-info', (user) => {
       users.set(socket.id, user)
       io.emit('members', Array.from(users.values()))
+      socket.broadcast.emit('broadcast:notify-message', { msg: `${user.name}加入连接` })
     })
 
     // 传输队列信息

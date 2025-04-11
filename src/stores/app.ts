@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { download, debug } from '@/utils'
 import { io, Socket } from 'socket.io-client'
 import dayjs from 'dayjs'
+import {useSettingStore} from './setting'
 
 const CHUNK_SIZE = 1 * 1024 * 1024 // 2MB
 let ws: WebSocket
@@ -31,6 +32,7 @@ export const useAppStore = defineStore('app', () => {
   }
   const isOnline = ref(false)
   const sendStatus = ref('待发送')
+  const showSetting = ref(false)
 
   let socket: Socket
   const initConnection = () => {
@@ -56,6 +58,14 @@ export const useAppStore = defineStore('app', () => {
         type: 'message',
         data: msg,
         userId: id,
+      })
+    })
+    // 通知类文本消息
+    socket.on('broadcast:notify-message', ({ id, msg }) => {
+      contentList.value.push({
+        type: 'notify',
+        data: msg,
+        userId: '',
       })
     })
 
@@ -110,6 +120,10 @@ export const useAppStore = defineStore('app', () => {
         }
         showTranfer.value = true
         sendStatus.value = '待接收'
+        const setting = useSettingStore()
+        if (setting.autoAccept) {
+          confirmReceive()
+        }
         break
       case 'queue-index':
         queueIndex.value = data
@@ -126,7 +140,7 @@ export const useAppStore = defineStore('app', () => {
         if (currentFile.transferredByte === currentFile.size) {
           currentFile.useTime = dayjs().diff(currentFile.startTime, 'seconds')
           currentFile.isDone = true
-          download(currentFile);
+          // download(currentFile);
         }
         break
     }
@@ -250,6 +264,7 @@ export const useAppStore = defineStore('app', () => {
     tranferFileQueue,
     queueIndex,
     isOnline,
+    showSetting,
     sendStatus,
     initConnection,
     sendMessage,

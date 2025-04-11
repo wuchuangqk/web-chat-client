@@ -46,7 +46,7 @@
             <Button @click="store.cancelReceive">不接收</Button>
           </div>
           <div v-if="sendStatus === '对方拒绝接收'" class="flex justify-center gap-x-2">
-            <Button @click="store.confirmReceive">再次发送</Button>
+            <Button @click="store.beforeSend">再次发送</Button>
           </div>
         </div>
       </div>
