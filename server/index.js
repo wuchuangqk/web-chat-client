@@ -58,6 +58,11 @@ const startServer = (port) => {
     socket.on('ack', ({ targetId }) => {
       socketMap.get(targetId).emit('ack')
     })
+    socket.on('receiver-responses', ({ targetId, type }) => {
+      socketMap.get(targetId).emit('receiver-responses', {
+        type,
+      })
+    })
   })
   server.listen(port, () => {
     const networks = os.networkInterfaces();

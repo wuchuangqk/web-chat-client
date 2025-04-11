@@ -30,6 +30,7 @@ export const useAppStore = defineStore('app', () => {
     '安卓': 'android',
   }
   const isOnline = ref(false)
+  const sendStatus = ref('待发送')
 
   let socket: Socket
   const initConnection = () => {
@@ -69,6 +70,17 @@ export const useAppStore = defineStore('app', () => {
     // 文件传输
     socket.on('tranfer-file', handleTransferFile)
     socket.on('ack', onAck)
+    socket.on('receiver-responses', ({ type }) => {
+      switch (type) {
+        case 'accept':
+          sendStatus.value = '对方同意接收'
+          sendFile()
+          break
+        case 'refuse':
+          sendStatus.value = '对方拒绝接收'
+          break
+      }
+    })
   }
   // 一个ack表示一个来回
   // 接收方收到数据了
@@ -97,6 +109,7 @@ export const useAppStore = defineStore('app', () => {
           })
         }
         showTranfer.value = true
+        sendStatus.value = '待接收'
         break
       case 'queue-index':
         queueIndex.value = data
@@ -133,18 +146,6 @@ export const useAppStore = defineStore('app', () => {
 
   const sendFile = () => {
     if (!tranferFileQueue.value.length) return
-    isShowSend.value = false
-    const { receiver, queue } = tranferMeta.value
-    socket.emit('tranfer-file', {
-      targetId: receiver,
-      type: 'queue',
-      data: queue.map(val => {
-        return {
-          name: val.name,
-          size: val.size,
-        }
-      })
-    })
     let jobIndex = 0
     const jobQueue = () => {
       queueIndex.value = jobIndex
@@ -186,6 +187,39 @@ export const useAppStore = defineStore('app', () => {
     }
     jobQueue()
   }
+  // 等待对方确认
+  const beforeSend = () => {
+    if (!tranferFileQueue.value.length) return
+    isShowSend.value = false
+    sendStatus.value = '等待对方确认'
+    const { receiver, queue } = tranferMeta.value
+    socket.emit('tranfer-file', {
+      targetId: receiver,
+      type: 'queue',
+      data: queue.map(val => {
+        return {
+          name: val.name,
+          size: val.size,
+        }
+      })
+    })
+  }
+  const confirmReceive = () => {
+    const { sender } = tranferMeta.value
+    socket.emit('receiver-responses', {
+      targetId: sender,
+      type: 'accept',
+    })
+    sendStatus.value = '已同意接收'
+  }
+  const cancelReceive = () => {
+    const { sender } = tranferMeta.value
+    socket.emit('receiver-responses', {
+      targetId: sender,
+      type: 'refuse',
+    })
+    showTranfer.value = false
+  }
   const resetQueue = () => {
     // @ts-ignore
     tranferMeta.value = null
@@ -216,11 +250,15 @@ export const useAppStore = defineStore('app', () => {
     tranferFileQueue,
     queueIndex,
     isOnline,
+    sendStatus,
     initConnection,
     sendMessage,
     sendFile,
+    beforeSend,
     resetQueue,
     listenPage,
     updateUserInfo,
+    confirmReceive,
+    cancelReceive,
   }
 })

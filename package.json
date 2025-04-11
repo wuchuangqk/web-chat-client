@@ -18,7 +18,7 @@
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "vconsole": "^3.15.1",
-    "vue": "^3.4.37",
+    "vue": "^3.5.13",
     "webrtc-adapter": "^9.0.1"
   },
   "devDependencies": {

@@ -8,6 +8,7 @@
       <div class="px-7 text-[#666]">
         <div class="grid grid-cols-1 gap-y-2 py-4">
           <span>传输队列：{{ (queueIndex + 1) }}/{{ tranferMeta.queue.length }}</span>
+          <p>状态：{{ sendStatus }}</p>
           <p v-if="!isSender" class="flex items-center">
             <span>发送方：</span>
             <Icon :icon="typeIconMap[sender.type]" class-name="w-4 h-4 mr-1" />
@@ -36,8 +37,17 @@
             </div>
           </div>
         </div>
-        <div class="flex justify-center gap-x-2 pt-8 pb-4">
-          <Button v-show="isShowSend" @click="store.sendFile">开始传输</Button>
+        <div class="pt-8 pb-4">
+          <div v-show="isShowSend" class="flex justify-center gap-x-2">
+            <Button @click="store.beforeSend">发送</Button>
+          </div>
+          <div v-if="sendStatus === '待接收'" class="flex justify-center gap-x-2">
+            <Button @click="store.confirmReceive">确认接收</Button>
+            <Button @click="store.cancelReceive">不接收</Button>
+          </div>
+          <div v-if="sendStatus === '对方拒绝接收'" class="flex justify-center gap-x-2">
+            <Button @click="store.confirmReceive">再次发送</Button>
+          </div>
         </div>
       </div>
     </div>
@@ -59,6 +69,7 @@ const {
   user,
   showTranfer,
   usersMap,
+  sendStatus,
 } = toRefs(store)
 const currentFile = computed(() => tranferMeta.value.queue[queueIndex.value])
 const isSender = computed(() => user.value.id === tranferMeta.value.sender)
