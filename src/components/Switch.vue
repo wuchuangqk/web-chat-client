@@ -2,12 +2,12 @@
   <div class="win-radio" :class="{ active }" @click="setActive">
     <!-- <div class="win-radio__label">{{ active ? activedText : unActivedText }}</div> -->
     <div ref="outerRef" class="win-radio__outer">
-      <div ref="innerRef" class="win-radio__inner" :style="{ left: left + 'px' }"></div>
+      <div ref="innerRef" class="win-radio__inner"></div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, useTemplateRef, ref, computed, nextTick } from 'vue';
+import { ref, nextTick } from 'vue';
 
 const {
   activedText = '开',
@@ -21,31 +21,12 @@ const emit = defineEmits<{
   (e: 'change', value: boolean): void
 }>()
 
-const outerRef = useTemplateRef('outerRef')
-const innerRef = useTemplateRef('innerRef')
-const left = ref(0)
-
-const setLeft = () => {
-  if (active.value === true) {
-    const style = getComputedStyle(outerRef.value!)
-    const paddingLeft = parseFloat(style.getPropertyValue('padding-left'))
-    const paddingRight = parseFloat(style.getPropertyValue('padding-right'))
-    left.value = outerRef.value!.clientWidth - paddingLeft - paddingRight - innerRef.value!.offsetWidth
-  } else {
-    left.value = 0
-  }
-}
 const setActive = () => {
   active.value = !active.value
   nextTick(() => {
-    setLeft()
     emit('change', active.value)
   })
 }
-
-onMounted(() => {
-  setLeft()
-})
 </script>
 
 <style lang="scss" scoped>
@@ -66,6 +47,8 @@ onMounted(() => {
 
     .win-radio__inner {
       background-color: #fff;
+      left: 22px;
+      transition: left 0.2s;
     }
   }
 }
@@ -84,6 +67,7 @@ onMounted(() => {
   background-color: #DBDBDB;
   // border: 1px solid #a2a2a2;
   box-sizing: border-box;
+  position: relative;
 
   &:hover {
 
