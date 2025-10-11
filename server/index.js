@@ -1,12 +1,9 @@
 import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
-import url from 'node:url'
 import os from 'node:os'
-import { exec } from 'node:child_process'
 
 const app = express()
-app.use(express.static(url.fileURLToPath(new URL('../dist', import.meta.url))))
 
 const users = new Map()
 const socketMap = new Map()
@@ -81,9 +78,6 @@ const startServer = (port) => {
       }
     }
     console.log(`chat server is running at ${localIP ? localIP + ':' : ''}${port}`);
-    if (localIP) {
-      exec(`start "" "http://${localIP}:${port}"`)
-    }
   })
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
