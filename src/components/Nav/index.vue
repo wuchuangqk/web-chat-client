@@ -5,7 +5,7 @@
       <div class="text-[#999] text-xs">{{ isOnline ? '在线' : '离线' }}</div>
     </div>
     <div class="flex-1 flex justify-center">
-      <Tab />
+      <Title />
     </div>
     <div class="flex flex-1 justify-end" @click="appStore.showRegister = true">
       <div class="flex items-center">
@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { toRefs } from 'vue'
-import Tab from './Tab.vue';
+import Title from './Title.vue';
 import { useAppStore } from '@/stores/app';
 import Icon from '../Icon.vue';
 

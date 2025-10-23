@@ -3,11 +3,15 @@ import { defineStore } from 'pinia'
 import { download, debug } from '@/utils'
 import { io, Socket } from 'socket.io-client'
 import dayjs from 'dayjs'
-import {useSettingStore} from './setting'
+import { useSettingStore } from './setting'
+import { useSessionStore } from './session'
+import { Message } from '@/enums'
 
-const CHUNK_SIZE = 1 * 1024 * 1024 // 2MB
-let ws: WebSocket
+const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
+
 export const useAppStore = defineStore('app', () => {
+  const session = useSessionStore()
+
   const user = ref<IUser>({
     name: '',
     id: '',
@@ -43,7 +47,7 @@ export const useAppStore = defineStore('app', () => {
     socket.on('connect', () => {
       console.log('connect', socket.id);
       user.value.id = socket.id as string
-      // 将用户信息同步到后台
+      // 将用户信息同步到后台，同时拉取房间内成员
       socket.emit('bind-user-info', user.value)
       isOnline.value = true
     })
@@ -70,11 +74,23 @@ export const useAppStore = defineStore('app', () => {
     })
 
     // 房间里的成员
-    socket.on('members', (users) => {
+    socket.on('members', (users: IUser[]) => {
       usersMap.value.clear()
       users.forEach((user: IUser) => {
         usersMap.value.set(user.id, user)
       })
+
+      if (users.length === 1) {
+        session.target = undefined
+        session.isTargetJoin = false
+      } else {
+        // 如果有多人加入房间，只取第一个
+        const otherUsers = users.filter((_user) => _user.id !== user.value.id)
+        if (otherUsers.length) {
+          session.target = otherUsers[0]
+          session.isTargetJoin = true
+        }
+      }
     })
 
     // 文件传输
@@ -150,7 +166,6 @@ export const useAppStore = defineStore('app', () => {
   }
   // 发送文本消息
   const sendMessage = (data: IMessage2) => {
-    // ws.send(JSON.stringify(data))
     socket.emit('client:text-message', data.data)
   }
 
@@ -251,6 +266,13 @@ export const useAppStore = defineStore('app', () => {
     //   }
     // })
   }
+  const addMessage = (type: Message, data: any) => {
+    contentList.value.push({
+      type,
+      data,
+      userId: user.value.id
+    })
+  }
   return {
     user,
     usersMap,
@@ -275,5 +297,6 @@ export const useAppStore = defineStore('app', () => {
     updateUserInfo,
     confirmReceive,
     cancelReceive,
+    addMessage,
   }
 })

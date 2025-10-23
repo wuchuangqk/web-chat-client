@@ -3,7 +3,7 @@
     <Nav />
     <div v-show="appStore.activeTab === 0" class="flex-1 overflow-hidden flex flex-col">
       <Chat />
-      <OnlineUsers v-if="isHasOnlineUsers" />
+      <OnlineUsers v-if="session.isTargetJoin" />
       <Input />
     </div>
     <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center bg-white">
@@ -20,20 +20,18 @@
 import Chat from './components/Chat.vue';
 import Input from './components/Input.vue';
 import { useAppStore } from '@/stores/app';
+import { useSessionStore } from '@/stores/session';
 import FileTranfer from './components/FileTranfer.vue';
 import Nav from './components/Nav/index.vue';
 import UserList from './components/UserList.vue';
 import UserRegister from './components/UserRegister.vue';
 import OnlineUsers from './components/OnlineUsers.vue';
-import Setting from './components/Setting.vue';
 import { computed, onMounted } from 'vue';
 
 const appStore = useAppStore()
+const session = useSessionStore()
 const isHasOnlineUsers = computed(() => Array.from(appStore.usersMap.values()).length !== 0)
-onMounted(() => {
-  getUserInfo()
-  // appStore.listenPage()
-})
+
 const getUserInfo = () => {
   if (!localStorage.getItem('open-chat:user_info') || !localStorage.getItem('open-chat:server_url')) {
     appStore.showRegister = true
@@ -45,6 +43,9 @@ const getUserInfo = () => {
   appStore.initConnection()
 }
 
+onMounted(() => {
+  getUserInfo()
+})
 </script>
 <style lang="scss" scoped>
 .main {

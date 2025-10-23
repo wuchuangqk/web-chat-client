@@ -1,65 +1,118 @@
 <template>
-  <div class="input-wrap border-t border-t-slate-300 ">
+  <div class="input-wrap border-t border-t-slate-300">
     <div class="h-full flex-col pc bg-white">
       <div class="flex-1 px-5 py-3">
-        <textarea ref="textareaRef" v-model="content" placeholder="Enter发送，Ctrl+Enter换行"
-          class="w-full h-full outline-0 resize-none" @keydown="notAllowEnter"></textarea>
+        <textarea
+          ref="textareaRef"
+          v-model="content"
+          placeholder="Enter发送，Ctrl+Enter换行"
+          class="w-full h-full outline-0 resize-none"
+          @keydown="notAllowEnter"
+        ></textarea>
       </div>
       <div class="flex justify-end items-center px-5 pb-2">
-        <Button @click="send">发送</Button>
+        <Button @click="sendImg">传图片</Button>
       </div>
     </div>
     <div class="h-full items-center mobile bg-[#F5F5F5] px-4 py-2">
       <div class="flex-1 bg-white h-full px-2 rounded">
-        <input ref="textareaRef" v-model="content" placeholder="发送消息" class="w-full h-full outline-0"
-          @keydown="notAllowEnter" />
+        <input
+          ref="textareaRef"
+          v-model="content"
+          placeholder="发送消息"
+          class="w-full h-full outline-0"
+          @keydown="notAllowEnter"
+        />
       </div>
-      <div class="h-full flex justify-center shrink-0 items-center ml-4 px-4 rounded bg-[#4EC588] text-white"
-        @click="send">
-        发送
+      <div
+        class="h-full flex justify-center shrink-0 items-center ml-4 px-4 rounded bg-[#4EC588] text-white"
+        @click="sendImg"
+      >
+        传图片
       </div>
     </div>
+    <FileUploader ref="fileUploaderRef" @change="prepareTransfer" />
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useAppStore } from '@/stores/app';
-import Button from './Button.vue';
+import { onMounted, ref } from "vue";
+import { useAppStore } from "@/stores/app";
+import { useSessionStore } from "@/stores/session";
+import Button from "./Button.vue";
+import FileUploader from "./FileUploader.vue";
+import { Message } from "@/enums";
 
 onMounted(() => {
-  textareaRef.value?.focus()
-})
-const appStore = useAppStore()
-const content = ref('')
-let loading = false
+  textareaRef.value?.focus();
+});
+const appStore = useAppStore();
+const sessionStore = useSessionStore();
+const content = ref("");
+let loading = false;
 const send = () => {
-  if (loading) return
-  loading = true
-  if (!content.value.trim()) return
-  const value = content.value.split('\n').join('<br/>')
+  if (loading) return;
+  loading = true;
+  if (!content.value.trim()) return;
+  const value = content.value.split("\n").join("<br/>");
   const message = {
-    type: 'message',
+    type: "message",
     data: value,
-    userId: appStore.user.id
-  }
-  appStore.contentList.push(message)
-  appStore.sendMessage(message)
-  content.value = ''
-  loading = false
-}
+    userId: appStore.user.id,
+  };
+  appStore.contentList.push(message);
+  appStore.sendMessage(message);
+  content.value = "";
+  loading = false;
+};
 const notAllowEnter = (e: KeyboardEvent) => {
   // Enter键发送，同时阻止插入换行符
-  if (e.key === 'Enter' && !e.ctrlKey) {
+  if (e.key === "Enter" && !e.ctrlKey) {
     e.preventDefault();
-    send()
+    send();
     return false;
   }
   // 同时按下Ctrl+Enter，插入换行符
-  if (e.key === 'Enter' && e.ctrlKey) {
-    content.value += '\r\n'
+  if (e.key === "Enter" && e.ctrlKey) {
+    content.value += "\r\n";
   }
-}
-const textareaRef = ref<HTMLTextAreaElement>()
+};
+const textareaRef = ref<HTMLTextAreaElement>();
+
+const fileUploaderRef = ref<InstanceType<typeof FileUploader>>();
+const sendImg = () => {
+  if (sessionStore.isTargetJoin === false) {
+    return;
+  }
+  fileUploaderRef.value?.chooseFile();
+};
+// 预处理传输格式，建立链接
+const prepareTransfer = (files: FileList) => {
+  appStore.resetQueue();
+  const queue = [];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    appStore.tranferFileQueue.push(file);
+    queue.push({
+      name: file.name,
+      size: file.size,
+      transferredByte: 0,
+      chunks: [],
+      time: "",
+      progress: 0,
+      startTime: null,
+      useTime: null,
+      isDone: false,
+    });
+    appStore.addMessage(Message.IMAGE, file);
+  }
+  appStore.tranferMeta = {
+    sender: appStore.user.id,
+    receiver: sessionStore.target!.id,
+    queue,
+  };
+  // appStore.isShowSend = true;
+  // appStore.showTranfer = true;
+};
 </script>
 
 <style lang="scss" scoped>
