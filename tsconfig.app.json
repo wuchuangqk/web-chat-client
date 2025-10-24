@@ -1,13 +1,23 @@
 {
-  "include": ["env.d.ts", "src/client/**/*", "src/client/**/*.vue", "src/client/**/*.ts"],
-  "exclude": ["src/**/__tests__/*"],
+  "include": [
+    "env.d.ts",
+    "src/client/**/*",
+    "src/client/**/*.vue",
+    "src/client/**/*.ts",
+    "src/common/**/*"
+  ],
+  "exclude": [
+    "src/**/__tests__/*"
+  ],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/client/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "esModuleInterop":true,
+    "esModuleInterop": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",

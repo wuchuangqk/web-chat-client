@@ -27,7 +27,7 @@ import { useAppStore } from '@/stores/app';
 import { useSettingStore } from '@/stores/setting';
 import Icon from './Icon.vue';
 import Switch from './Switch.vue';
-import { debug } from '@/utils'
+import { debug } from '@/client/utils'
 
 const store = useAppStore()
 const setting = useSettingStore()

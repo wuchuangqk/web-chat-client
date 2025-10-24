@@ -2,7 +2,7 @@
   <input ref="fileUploaderRef" type="file" multiple style="display: none" />
 </template>
 <script setup lang="ts">
-import { debug } from "@/utils";
+import { debug } from "@/client/utils";
 import { onMounted, ref } from "vue";
 
 const emits = defineEmits(["change"]);

@@ -2,17 +2,19 @@
   <div class="relative chat-wrap bg-[--chat-bg]">
     <div ref="srcollEl" class="p-2 scroll-wrap">
       <template v-for="content in contentList">
-        <Content v-if="content.type === 'message'" :message="content" />
-        <NotifyMessage v-if="content.type === 'notify'" :message="content" />
+        <TextMessage v-if="content.type === Message.Text" :message="(content as ITextMessage)" />
+        <NotifyMessage v-if="content.type === Message.Notify" :message="(content as INotifyMessage)" />
       </template>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { toRefs, ref, watch, nextTick } from 'vue'
-import Content from './Content.vue';
-import NotifyMessage from './NotifyMessage.vue';
+import TextMessage from './Message/TextMessage.vue';
+import NotifyMessage from './Message/NotifyMessage.vue';
 import { useAppStore } from '@/stores/app';
+import { Message } from '@/common/enums';
+import { ITextMessage, INotifyMessage } from '@/common/types/client';
 
 const { contentList } = toRefs(useAppStore())
 const srcollEl = ref<HTMLElement>()

@@ -40,7 +40,7 @@ import { useAppStore } from "@/stores/app";
 import { useSessionStore } from "@/stores/session";
 import Button from "./Button.vue";
 import FileUploader from "./FileUploader.vue";
-import { Message } from "@/enums";
+import { Message } from "@/common/enums";
 
 onMounted(() => {
   textareaRef.value?.focus();

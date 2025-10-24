@@ -4,7 +4,9 @@
   </div>
 </template>
 <script setup lang="ts">
+import { INotifyMessage } from '@/common/types/client';
+
 defineProps<{
-  message: IMessage2
+  message: INotifyMessage
 }>()
 </script>

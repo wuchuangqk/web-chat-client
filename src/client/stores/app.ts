@@ -1,11 +1,12 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { download, debug } from '@/utils'
+import { download, debug } from '@/client/utils'
 import { io, Socket } from 'socket.io-client'
 import dayjs from 'dayjs'
 import { useSettingStore } from './setting'
 import { useSessionStore } from './session'
-import { Message } from '@/enums'
+import { Message, Event } from '@/common/enums/index'
+import type { IContent } from '@/common/types/client'
 
 const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
 
@@ -18,7 +19,7 @@ export const useAppStore = defineStore('app', () => {
     type: '',
   }) // 当前用户
   const usersMap = ref<Map<string, IUser>>(new Map())
-  const contentList = ref<IMessage2[]>([]) // 消息记录
+  const contentList = ref<IContent[]>([]) // 消息记录
   const activeTab = ref(0)
   const showTranfer = ref(false) // 是否接收到文件
   const tranferMeta = ref<ITranferMeta>(null as unknown as ITranferMeta)
@@ -45,31 +46,37 @@ export const useAppStore = defineStore('app', () => {
     socket = io(serverUrl + ':' + port)
     // 建立连接
     socket.on('connect', () => {
-      console.log('connect', socket.id);
-      user.value.id = socket.id as string
+      console.log('client connect', socket.id);
+      // user.value.id = socket.id as string
       // 将用户信息同步到后台，同时拉取房间内成员
-      socket.emit('bind-user-info', user.value)
+      // socket.emit('bind-user-info', user.value)
+      // 建立连接后加入房间
+      socket.emit(Event.JoinRoom, user.value)
       isOnline.value = true
     })
     // 断开连接
     socket.on('disconnect', () => {
-      console.log('disconnect');
+      console.log('client disconnect');
       isOnline.value = false
     })
+
+    socket.on(Event.NewMember, (newMember: IUser) => {
+      debug({ msg: '新成员加入房间', newMember })
+    })
+
     // 文本消息
-    socket.on('broadcast:text-message', ({ id, msg }) => {
+    socket.on(Event.TextMessage, ({ id, msg }) => {
       contentList.value.push({
-        type: 'message',
+        type: Message.Text,
         data: msg,
         userId: id,
       })
     })
     // 通知类文本消息
-    socket.on('broadcast:notify-message', ({ id, msg }) => {
+    socket.on('broadcast:notify-message', ({ msg }) => {
       contentList.value.push({
-        type: 'notify',
+        type: Message.Notify,
         data: msg,
-        userId: '',
       })
     })
 

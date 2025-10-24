@@ -59,7 +59,7 @@
 import { useAppStore } from '@/stores/app';
 import Button from './Button.vue';
 import { computed, toRefs } from 'vue';
-import { fmtSize } from '@/utils'
+import { fmtSize } from '@/client/utils'
 import Icon from './Icon.vue';
 
 const store = useAppStore()

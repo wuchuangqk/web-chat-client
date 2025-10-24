@@ -44,21 +44,22 @@ import { reactive } from 'vue'
 import Icon from './Icon.vue';
 import Button from './Button.vue';
 import { useAppStore } from '@/stores/app';
+import { Equipment } from '@/common/enums';
 
 const appStore = useAppStore()
 const formData = reactive({
   name: appStore.user.name,
-  type: appStore.user.type || 'PC',
+  type: appStore.user.type || Equipment.PC,
   serverUrl: localStorage.getItem('open-chat:server_url') || window.location.hostname,
   port: localStorage.getItem('open-chat:port') || window.location.port,
 })
 const typeList = [
-  { name: 'PC', icon: 'pc' },
-  { name: '虚拟机', icon: 'vm' },
-  { name: '笔记本', icon: 'laptop' },
-  { name: 'iPhone', icon: 'iPhone' },
-  { name: 'iPad', icon: 'iPad' },
-  { name: '安卓', icon: 'android' },
+  { name: Equipment.PC, icon: 'pc' },
+  { name: Equipment.VirtualMachine, icon: 'vm' },
+  { name: Equipment.Laptop, icon: 'laptop' },
+  { name: Equipment.IPhone, icon: 'iPhone' },
+  { name: Equipment.IPad, icon: 'iPad' },
+  { name: Equipment.Android, icon: 'android' },
 ]
 const close = () => {
   appStore.showRegister = false

@@ -17,8 +17,9 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue'
-import Avatar from './Avatar.vue';
+import Avatar from '../Avatar.vue';
 import { useAppStore } from '@/stores/app';
+
 const props = defineProps<{
   message: IMessage2
 }>()
