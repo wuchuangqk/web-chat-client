@@ -2,11 +2,13 @@ import express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import os from 'node:os'
-import {Event} from '../common'
+import { Event, Room } from '../common/enums/index.ts'
+import type { IUser } from '../common/types/index.d.ts'
 
 const app = express()
 
-const users = new Map()
+// 存储所有注册的用户
+const users = new Map<string, IUser>()
 const socketMap = new Map()
 
 const initialPort = 4090
@@ -21,49 +23,38 @@ const startServer = (port: number) => {
   // 一个新连接进来
   io.on('connection', (socket) => {
     console.log(`new connection, socket.id: ${socket.id}`);
-    
-    let onlineCount = io.engine.clientsCount
-    // console.log(`[${socket.id}]新用户加入，在线人数：${onlineCount}`);
-
-    // 判断房间人数是否满员
-    const mainRoomSize = io.of('main-room').sockets.size
-    // console.log(`主房间人数: ${mainRoomSize}`);
-    // if (mainRoomSize > 2) {
-    //   socket.emit('room-full')
-    //   socket.disconnect(true)
-    //   return
-    // }
-
-    // 加入到主房间
-    // console.log(`[${socket.id}]加入主房间`);
-    // socket.join('main-room')
-    // socketMap.set(socket.id, socket)
 
     // 断开连接
     socket.on('disconnect', () => {
       console.log(`socket.id: ${socket.id} disconnect`);
-      // onlineCount = io.engine.clientsCount
       // 看这个socket有没有关联的用户
       const user = users.get(socket.id)
       if (user) {
-        // console.log(`[${socket.id}]${user.name}断开连接，在线人数剩余：${onlineCount}`);
-        socket.to('main-room').emit('broadcast:notify-message', { msg: `${user.name}离开房间` })
+        socket.to(Room.Main).emit('broadcast:notify-message', { msg: `${user.name}离开房间` })
         users.delete(socket.id)
-        socket.to('main-room').emit(Event.MemberLeave, user)
+        socket.to(Room.Main).emit(Event.MemberLeave, user)
       }
-      // socket.to('main-room').emit('members', Array.from(users.values()))
-      // socketMap.delete(socket.id)
     });
 
-    socket.on('client:text-message', (msg) => {
+    socket.on(Event.TextMessage, (msg) => {
       // 广播给其他人
-      socket.to('main-room').emit('broadcast:text-message', { id: socket.id, msg })
+      const user = users.get(socket.id)
+      socket.to(Room.Main).emit(Event.TextMessage, { userId: user!.id, msg })
+    })
+
+    socket.on(Event.JoinRoom, (data: IUser) => {
+      // 加入房间的同时进行注册,将用户与socket.id关联
+      users.set(socket.id, data)
+      socket.join(Room.Main)
+      console.log(`${data.name}加入主方间`);
+      // 通知其他人我进来了
+      socket.to(Room.Main).emit(Event.NewMember, data)
     })
 
     socket.on('bind-user-info', (user) => {
       users.set(socket.id, user)
-      io.to('main-room').emit('members', Array.from(users.values()))
-      socket.to('main-room').emit('broadcast:notify-message', { msg: `${user.name}加入连接` })
+      io.to(Room.Main).emit('members', Array.from(users.values()))
+      socket.to(Room.Main).emit('broadcast:notify-message', { msg: `${user.name}加入连接` })
     })
 
     // 传输队列信息
@@ -74,9 +65,11 @@ const startServer = (port: number) => {
         data,
       })
     })
+
     socket.on('ack', ({ targetId }) => {
       socketMap.get(targetId).emit('ack')
     })
+
     socket.on('receiver-responses', ({ targetId, type }) => {
       socketMap.get(targetId).emit('receiver-responses', {
         type,
@@ -99,7 +92,7 @@ const startServer = (port: number) => {
     }
     console.log(`chat server is running at ${localIP ? localIP + ':' : ''}${port}`);
   })
-  server.on('error', (err) => {
+  server.on('error', (err: any) => {
     if (err.code === 'EADDRINUSE') {
       console.error(`端口 ${port} 被占用，尝试下一个端口...`);
       startServer(port + 1)

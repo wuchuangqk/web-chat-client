@@ -1,11 +1,11 @@
 {
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/*.ts"],
+  "include": ["env.d.ts", "src/client/**/*", "src/client/**/*.vue", "src/client/**/*.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/client/*"]
     },
     "esModuleInterop":true,
     "target": "esnext",

@@ -1,8 +1,8 @@
-import './assets/main.scss'
+import './client/assets/main.scss'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import App from './App.vue'
+import App from './client/App.vue'
 import 'virtual:svg-icons-register'
 const app = createApp(App)
 
