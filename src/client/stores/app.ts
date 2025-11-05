@@ -43,14 +43,13 @@ export const useAppStore = defineStore('app', () => {
     const serverUrl = localStorage.getItem('open-chat:server_url') as string
     const port = localStorage.getItem('open-chat:port') as string
     socket = io(serverUrl + ':' + port)
-    console.log('socket', socket);
 
     // 建立连接
     socket.on('connect', () => {
       console.log('客户端连接成功，sokcetId:', socket.id);
       isOnline.value = true
       user.socketId = socket.id as string
-
+      addNotify(`连接成功`)
       // 连接成功后发送加入房间申请
       socket.emit(Event.JoinRoom, user)
     })
@@ -58,20 +57,17 @@ export const useAppStore = defineStore('app', () => {
     socket.on('disconnect', () => {
       console.log('client disconnect');
       isOnline.value = false
+      addNotify('连接断开')
     })
     socket.on('error', (error) => {
-      console.log(error);
+      console.log('error', error);
       debug({ msg: 'socket client error' })
     })
 
     socket.on(Event.NewMember, (newMember: IUser) => {
       console.log(`Event.NewMember`, newMember);
-      contentList.value.push({
-        type: Message.Notify,
-        data: `${newMember.name}进入房间`
-      })
       addMember(newMember)
-      // usersMap.value.set(newMember.id, newMember)
+      addNotify(`${newMember.name}进入房间`)
     })
 
     socket.on(Event.MembersList, (members: IUser[]) => {
@@ -82,6 +78,7 @@ export const useAppStore = defineStore('app', () => {
     socket.on(Event.MemberLeave, (member: IUser) => {
       console.log('Event.MemberLeave', member);
       removeMember(member)
+      addNotify(`${member.name}离开房间`)
     })
 
     // 文本消息
@@ -198,6 +195,13 @@ export const useAppStore = defineStore('app', () => {
 
   const debugHelper = (msg: string) => {
     debug({ user: user.value.name, id: user.value.id, msg })
+  }
+
+  const addNotify = (msg: string) => {
+    contentList.value.push({
+      type: Message.Notify,
+      data: msg
+    })
   }
 
   const sendFile = () => {

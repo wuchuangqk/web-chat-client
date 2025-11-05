@@ -9,7 +9,6 @@ const readCache = () => {
   }
   
   return {
-    id: '',
     name: '',
     equipment: Equipment.PC,
     socketId: '',

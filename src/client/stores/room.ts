@@ -10,8 +10,7 @@ export const addMember = (user: IUser) => {
 }
 
 export const removeMember = (user: IUser) => {
-  console.log(`removeMember`, user);
-  const index = userList.indexOf(user)
+  const index = userList.findIndex(val => val.socketId === user.socketId)
   if (index !== -1) {
     userList.splice(index, 1)
   }

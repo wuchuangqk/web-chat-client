@@ -40,7 +40,7 @@ const startServer = (port: number) => {
       console.log('TextMessage', msg);
       // 广播给其他人
       const user = members.get(socket.id)
-      socket.to(Room.Main).emit(Event.TextMessage, { userId: user!.id, msg })
+      socket.to(Room.Main).emit(Event.TextMessage, { userId: user.socketId, msg })
     })
 
     // 用户申请加入房间
