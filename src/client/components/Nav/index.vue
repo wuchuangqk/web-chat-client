@@ -7,9 +7,9 @@
     <div class="flex-1 flex justify-center">
       <Title />
     </div>
-    <div class="flex flex-1 justify-end" @click="appStore.showRegister = true">
+    <div class="flex flex-1 justify-end" @click="openSetting">
       <div class="flex items-center">
-        <Icon :icon="typeIconMap[user.type]" class-name="w-6 h-6 mr-2" />
+        <Icon :icon="typeIconMap[user.equipment]" class-name="w-6 h-6 mr-2" />
         <span>{{ user.name }}</span>
       </div>
     </div>
@@ -23,6 +23,11 @@ import Icon from '../Icon.vue';
 
 const appStore = useAppStore()
 const { usersMap, typeIconMap, user, isOnline } = toRefs(appStore)
+
+const openSetting = () => {
+  appStore.isUpdateInfo = true
+  appStore.showRegister = true
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -38,9 +38,7 @@ const startServer = (port: number) => {
 
     socket.on(Event.TextMessage, (msg) => {
       console.log('TextMessage', msg);
-      // 广播给其他人
-      const user = members.get(socket.id)
-      socket.to(Room.Main).emit(Event.TextMessage, { userId: user.socketId, msg })
+      socket.to(Room.Main).emit(Event.TextMessage, { socketId: socket.id, msg })
     })
 
     // 用户申请加入房间
@@ -62,6 +60,15 @@ const startServer = (port: number) => {
       members.set(socket.id, user)
       io.to(Room.Main).emit('members', Array.from(members.values()))
       socket.to(Room.Main).emit('broadcast:notify-message', { msg: `${user.name}加入连接` })
+    })
+
+    socket.on(Event.UpdateInfo, (_member: IUser) => {
+      const member = members.get(_member.socketId)
+      member.name = _member.name
+      member.equipment = _member.equipment
+
+      // 通知其他人
+      socket.to(Room.Main).emit(Event.UpdateInfo, _member)
     })
 
     // 传输队列信息

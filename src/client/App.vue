@@ -7,7 +7,7 @@
       <Input />
     </div>
     <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center bg-white">
-      <!-- <UserList /> -->
+      <!-- <memberList /> -->
     </div>
     <div v-if="!appStore.isOnline"
       class=" hidden sm:block fixed top-11 left-1 px-3 py-1 z-10 bg-[#dddddd] text-sm shadow">离线</div>
@@ -23,7 +23,6 @@ import { useAppStore } from '@/client/stores/app';
 import { useSessionStore } from '@/client/stores/session';
 import FileTranfer from './components/FileTranfer.vue';
 import Nav from './components/Nav/index.vue';
-import UserList from './components/UserList.vue';
 import UserRegister from './components/UserRegister.vue';
 import OnlineUsers from './components/OnlineUsers.vue';
 import { computed, onMounted } from 'vue';

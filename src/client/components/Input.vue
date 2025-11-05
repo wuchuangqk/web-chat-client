@@ -41,6 +41,7 @@ import { useSessionStore } from "@/client/stores/session";
 import Button from "./Button.vue";
 import FileUploader from "./FileUploader.vue";
 import { Message } from "@/common/enums";
+import { user } from "../stores/user";
 
 onMounted(() => {
   textareaRef.value?.focus();
@@ -57,11 +58,11 @@ const send = () => {
   const message = {
     type: Message.Text,
     data: value,
-    userId: appStore.user.id,
+    userId: user.socketId,
   };
+  content.value = "";
   appStore.contentList.push(message);
   appStore.sendMessage(message);
-  content.value = "";
   loading = false;
 };
 const notAllowEnter = (e: KeyboardEvent) => {

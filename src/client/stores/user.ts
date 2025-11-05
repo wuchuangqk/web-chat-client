@@ -7,7 +7,7 @@ const readCache = () => {
   if (value) {
     return JSON.parse(value)
   }
-  
+
   return {
     name: '',
     equipment: Equipment.PC,
@@ -17,7 +17,8 @@ const readCache = () => {
 
 export const user = reactive<IUser>(readCache())
 
-export const updateUser = (_user: IUser) => {
-  user.name = _user.name
-  user.equipment = _user.equipment
+export const updateUser = ({ name, equipment }: { name: string, equipment: Equipment }) => {
+  user.name = name
+  user.equipment = equipment
+  localStorage.setItem('open-chat:user_info', JSON.stringify(user))
 }

@@ -1,38 +1,25 @@
 <template>
-  <div class="flex mb-3" :style="{ 'justify-content': isSelf ? 'flex-end' : 'flex-start' }">
-    <!-- 对方头像 -->
-    <Avatar v-if="!isSelf" :user="targetUser" class="mr-2" />
-    <div>
-      <!-- 昵称 -->
-      <p v-if="!isSelf" class=" text-xs text-[#999] mb-1">[{{ targetUser.type }}]{{ targetUser.name }}</p>
-      <!-- 消息内容 -->
-      <div class="flex items-center relative" :class="[isSelf ? 'pl-11' : 'pr-11']" @click="copy">
-        <div class="p-2 rounded bg-white break-all" :class="{ 'self': isSelf }" v-html="message.data"></div>
-        <div v-if="showCopy" class="text-[#999] text-xs absolute" :class="[isSelf ? '-left-0' : '-right-0']">已复制</div>
-      </div>
+  <Member :message="message">
+    <div class="flex items-center relative" :class="[isSelf ? 'pl-11' : 'pr-11']" @click="copy">
+      <div class="p-2 rounded bg-white break-all" :class="{ 'self': isSelf }" v-html="message.data"></div>
+      <div v-if="showCopy" class="text-[#999] text-xs absolute" :class="[isSelf ? '-left-0' : '-right-0']">已复制</div>
     </div>
-    <!-- 自己头像 -->
-    <Avatar v-if="isSelf" :user="targetUser" class="ml-2" />
-  </div>
+  </Member>
 </template>
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
-import Avatar from '../Avatar.vue';
-import { useAppStore } from '@/client/stores/app';
+import { computed, ref } from 'vue'
+import Member from './Member.vue';
 import { ITextMessage } from '@/common/types/client';
+import { user } from '@/client/stores/user';
 
 const props = defineProps<{
   message: ITextMessage
 }>()
 
-const { user, usersMap } = toRefs(useAppStore())
 const showCopy = ref(false)
 
 const isSelf = computed(() => {
-  return props.message.userId === user.value.id
-})
-const targetUser = computed(() => {
-  return usersMap.value.get(props.message.userId) as IUser
+  return props.message.userId === user.socketId
 })
 
 let timer: any

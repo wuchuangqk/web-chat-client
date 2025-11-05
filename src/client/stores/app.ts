@@ -9,7 +9,7 @@ import { Message, Event } from '@/common/enums/index'
 import type { IContent, ITextMessage } from '@/common/types/client'
 import { IUser } from '@/common/types'
 import { user } from './user'
-import { addMember, removeMember, userList } from './room'
+import { addMember, removeMember, memberList } from './room'
 
 const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
 
@@ -72,7 +72,7 @@ export const useAppStore = defineStore('app', () => {
 
     socket.on(Event.MembersList, (members: IUser[]) => {
       console.log('Event.MembersList', members);
-      userList.push(...members)
+      memberList.push(...members)
     })
 
     socket.on(Event.MemberLeave, (member: IUser) => {
@@ -81,40 +81,31 @@ export const useAppStore = defineStore('app', () => {
       addNotify(`${member.name}离开房间`)
     })
 
+    socket.on(Event.UpdateInfo, (member: IUser) => {
+      console.log('Event.UpdateInfo', member);
+      const _member = memberList.find(val => val.socketId === member.socketId)
+      if (_member) {
+        _member.name = member.name
+        _member.equipment = member.equipment
+      }
+      addNotify(`${member.name}更新了个人信息`)
+    })
+
     // 文本消息
-    socket.on(Event.TextMessage, ({ id, msg }) => {
+    socket.on(Event.TextMessage, ({ socketId, msg }) => {
       contentList.value.push({
         type: Message.Text,
         data: msg,
-        userId: id,
+        userId: socketId,
       })
     })
+    
     // 通知类文本消息
     socket.on('broadcast:notify-message', ({ msg }) => {
       contentList.value.push({
         type: Message.Notify,
         data: msg,
       })
-    })
-
-    // 房间里的成员
-    socket.on('members', (users: IUser[]) => {
-      usersMap.value.clear()
-      users.forEach((user: IUser) => {
-        usersMap.value.set(user.id, user)
-      })
-
-      if (users.length === 1) {
-        session.target = undefined
-        session.isTargetJoin = false
-      } else {
-        // 如果有多人加入房间，只取第一个
-        const otherUsers = users.filter((_user) => _user.id !== user.value.id)
-        if (otherUsers.length) {
-          session.target = otherUsers[0]
-          session.isTargetJoin = true
-        }
-      }
     })
 
     // 文件传输
@@ -186,15 +177,11 @@ export const useAppStore = defineStore('app', () => {
     }
   }
   const updateUserInfo = () => {
-    socket.emit('bind-user-info', user.value)
+    socket.emit(Event.UpdateInfo, user)
   }
   // 发送文本消息
   const sendMessage = (message: ITextMessage) => {
     socket.emit(Event.TextMessage, message.data)
-  }
-
-  const debugHelper = (msg: string) => {
-    debug({ user: user.value.name, id: user.value.id, msg })
   }
 
   const addNotify = (msg: string) => {

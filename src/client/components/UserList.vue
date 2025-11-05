@@ -38,8 +38,8 @@ onMounted(() => {
   fileUploaderRef.value?.addEventListener('change', fileChange)
 })
 const otherUsers = computed(() => {
-  const userList = Array.from(store.usersMap.values())
-  return userList.filter(user => user.id !== store.user.id)
+  const memberList = Array.from(store.usersMap.values())
+  return memberList.filter(user => user.id !== store.user.id)
 })
 const chooseFile = (user: IUser) => {
   receiver = user

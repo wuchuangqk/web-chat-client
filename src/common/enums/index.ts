@@ -5,14 +5,19 @@ export enum Event {
   NewMember = 'NewMember',
   // 房间内的成员列表
   MembersList = 'MembersList',
+
   // 文本消息
   TextMessage = 'TextMessage',
   // 图片消息
   ImageMessage = 'ImageMessage',
+
   // 加入房间
   JoinRoom = 'JoinRoom',
   // 注册
   Register = 'Register',
+
+  // 更新用户信息
+  UpdateInfo = 'UpdateInfo',
 }
 
 export enum Room {

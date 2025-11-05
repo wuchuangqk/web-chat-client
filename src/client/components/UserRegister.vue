@@ -45,11 +45,12 @@ import Icon from './Icon.vue';
 import Button from './Button.vue';
 import { useAppStore } from '@/client/stores/app';
 import { Equipment } from '@/common/enums';
+import { updateUser, user } from '../stores/user';
 
 const appStore = useAppStore()
 const formData = reactive({
-  name: appStore.user.name,
-  type: appStore.user.type || Equipment.PC,
+  name: user.name,
+  type: user.equipment,
   serverUrl: localStorage.getItem('open-chat:server_url') || window.location.hostname,
   port: localStorage.getItem('open-chat:port') || window.location.port,
 })
@@ -66,13 +67,8 @@ const close = () => {
 }
 const submit = () => {
   if (!formData.name || !formData.type || !formData.serverUrl || !formData.port) return
-  appStore.user.name = formData.name
-  appStore.user.type = formData.type
-  if (!appStore.isUpdateInfo) {
-    appStore.user.id = appStore.user.name + new Date().getTime()
-    appStore.usersMap.set(appStore.user.id, appStore.user)
-  }
-  localStorage.setItem('open-chat:user_info', JSON.stringify(appStore.user))
+
+  updateUser({name: formData.name,equipment:formData.type})
   localStorage.setItem('open-chat:server_url', formData.serverUrl)
   localStorage.setItem('open-chat:port', formData.port)
   appStore.showRegister = false
@@ -80,6 +76,7 @@ const submit = () => {
     // 是否初次连接
     appStore.initConnection()
   } else {
+    appStore.isUpdateInfo = false
     // 通知其他用户
     appStore.updateUserInfo()
   }

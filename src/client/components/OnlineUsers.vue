@@ -1,7 +1,7 @@
 <template>
   <div class="flex shrink-0 py-1 px-4 items-center text-[#999]">
-    <span class="mr-3">{{ userList.length }}台设备在线</span>
-    <ToolTip v-for="user in userList" :key="user.id" class="mr-3">
+    <span class="mr-3">{{ memberList.length }}台设备在线</span>
+    <ToolTip v-for="user in memberList" :key="user.socketId" class="mr-3">
       <template #refence>
         <Avatar :user="user" />
       </template>
@@ -18,7 +18,7 @@
 import { useAppStore } from "@/client/stores/app";
 import Avatar from "./Avatar.vue";
 import ToolTip from "./ToolTip.vue";
-import { userList } from "../stores/room";
+import { memberList } from "../stores/room";
 
 const store = useAppStore();
 </script>
