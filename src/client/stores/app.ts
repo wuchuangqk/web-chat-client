@@ -9,7 +9,7 @@ import { Message, Event } from '@/common/enums/index'
 import type { IContent, ITextMessage } from '@/common/types/client'
 import { IUser } from '@/common/types'
 import { user } from './user'
-import { addUser } from './room'
+import { addMember, removeMember, userList } from './room'
 
 const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
 
@@ -70,8 +70,18 @@ export const useAppStore = defineStore('app', () => {
         type: Message.Notify,
         data: `${newMember.name}进入房间`
       })
-      addUser(newMember)
+      addMember(newMember)
       // usersMap.value.set(newMember.id, newMember)
+    })
+
+    socket.on(Event.MembersList, (members: IUser[]) => {
+      console.log('Event.MembersList', members);
+      userList.push(...members)
+    })
+
+    socket.on(Event.MemberLeave, (member: IUser) => {
+      console.log('Event.MemberLeave', member);
+      removeMember(member)
     })
 
     // 文本消息

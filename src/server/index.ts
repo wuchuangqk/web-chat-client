@@ -27,12 +27,12 @@ const startServer = (port: number) => {
     // 断开连接
     socket.on('disconnect', () => {
       console.log(`socket.id: ${socket.id} disconnect, 在线人数：${io.engine.clientsCount}`);
-      // 看这个socket有没有关联的用户
+      // 看这个socket有没有加入到房间里
       const user = members.get(socket.id)
       if (user) {
-        socket.to(Room.Main).emit('broadcast:notify-message', { msg: `${user.name}离开房间` })
-        members.delete(socket.id)
+        // socket.to(Room.Main).emit('broadcast:notify-message', { msg: `${user.name}离开房间` })
         socket.to(Room.Main).emit(Event.MemberLeave, user)
+        members.delete(socket.id)
       }
     });
 
@@ -45,11 +45,17 @@ const startServer = (port: number) => {
 
     // 用户申请加入房间
     socket.on(Event.JoinRoom, (user: IUser) => {
+      // 让用户去主房间
       socket.join(Room.Main)
-      // 加入房间的同时进行注册,将用户与socket.id关联
-      members.set(socket.id, user)
-      // 通知其他人我进来了
+
+      // 通知其他人有新用户进来
       socket.to(Room.Main).emit(Event.NewMember, user)
+
+      // 把房间里其他成员信息同步给用户
+      socket.emit(Event.MembersList, Array.from(members.values()))
+
+      // 记录下用户信息
+      members.set(socket.id, user)
     })
 
     socket.on('bind-user-info', (user) => {

@@ -3,6 +3,8 @@ export enum Event {
   MemberLeave = 'MemberLeave',
   // 新成员加入房间
   NewMember = 'NewMember',
+  // 房间内的成员列表
+  MembersList = 'MembersList',
   // 文本消息
   TextMessage = 'TextMessage',
   // 图片消息

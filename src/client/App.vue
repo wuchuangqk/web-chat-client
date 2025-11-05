@@ -27,7 +27,7 @@ import UserList from './components/UserList.vue';
 import UserRegister from './components/UserRegister.vue';
 import OnlineUsers from './components/OnlineUsers.vue';
 import { computed, onMounted } from 'vue';
-import { addUser } from './stores/room';
+import { addMember } from './stores/room';
 import { user } from './stores/user';
 
 const appStore = useAppStore()
@@ -48,7 +48,7 @@ const init = () => {
   //   appStore.user.id = appStore.user.name + new Date().getTime()
   // }
   // appStore.usersMap.set(appStore.user.id, appStore.user)
-  addUser(user)
+  addMember(user)
   appStore.initConnection()
 }
 

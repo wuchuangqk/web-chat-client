@@ -5,13 +5,12 @@ import { IUser } from "@/common/types";
 // 房间里的人
 export const userList = reactive<IUser[]>([])
 
-export const addUser = (user: IUser) => {
-  console.log(`addUser`, user);
+export const addMember = (user: IUser) => {
   userList.push(user)
 }
 
-export const removeUser = (user: IUser) => {
-  console.log(`removeUser`, user);
+export const removeMember = (user: IUser) => {
+  console.log(`removeMember`, user);
   const index = userList.indexOf(user)
   if (index !== -1) {
     userList.splice(index, 1)
