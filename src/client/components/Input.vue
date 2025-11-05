@@ -11,7 +11,7 @@
         ></textarea>
       </div>
       <div class="flex justify-end items-center px-5 pb-2">
-        <Button @click="sendImg">传图片</Button>
+        <Button @click="sendTextMessage">发送</Button>
       </div>
     </div>
     <div class="h-full items-center mobile bg-[#F5F5F5] px-4 py-2">
@@ -26,9 +26,9 @@
       </div>
       <div
         class="h-full flex justify-center shrink-0 items-center ml-4 px-4 rounded bg-[#4EC588] text-white"
-        @click="sendImg"
+        @click="sendTextMessage"
       >
-        传图片
+        发送
       </div>
     </div>
     <FileUploader ref="fileUploaderRef" @change="prepareTransfer" />
@@ -50,7 +50,7 @@ const appStore = useAppStore();
 const sessionStore = useSessionStore();
 const content = ref("");
 let loading = false;
-const send = () => {
+const sendTextMessage = () => {
   if (loading) return;
   loading = true;
   if (!content.value.trim()) return;
@@ -69,7 +69,7 @@ const notAllowEnter = (e: KeyboardEvent) => {
   // Enter键发送，同时阻止插入换行符
   if (e.key === "Enter" && !e.ctrlKey) {
     e.preventDefault();
-    send();
+    sendTextMessage();
     return false;
   }
   // 同时按下Ctrl+Enter，插入换行符

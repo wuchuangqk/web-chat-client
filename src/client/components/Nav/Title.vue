@@ -1,10 +1,9 @@
 <template>
-  <div>共{{ app.usersMap.size }}台设备在线</div>
+  <div>共{{ memberList.length }}台设备在线</div>
 </template>
 <script setup lang="ts">
-import { useAppStore } from "@/client/stores/app";
+import { memberList } from "@/client/stores/room";
 
-const app = useAppStore();
 </script>
 
 <style lang="scss" scoped></style>

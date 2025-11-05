@@ -20,7 +20,6 @@
 import Chat from './components/Chat.vue';
 import Input from './components/Input.vue';
 import { useAppStore } from '@/client/stores/app';
-import { useSessionStore } from '@/client/stores/session';
 import FileTranfer from './components/FileTranfer.vue';
 import Nav from './components/Nav/index.vue';
 import UserRegister from './components/UserRegister.vue';
@@ -30,8 +29,6 @@ import { addMember } from './stores/room';
 import { user } from './stores/user';
 
 const appStore = useAppStore()
-const session = useSessionStore()
-const isHasOnlineUsers = computed(() => Array.from(appStore.usersMap.values()).length !== 0)
 
 const init = () => {
   // 刚进来需要配置连接信息
@@ -39,14 +36,9 @@ const init = () => {
     appStore.showRegister = true
     return
   }
-  // const userInfo = JSON.parse(localStorage.getItem('open-chat:user_info') as string)
-  // appStore.user.name = userInfo.name
-  // appStore.user.type = userInfo.type
-  // appStore.user.id = userInfo.id
-  // if (!appStore.user.id) {
-  //   appStore.user.id = appStore.user.name + new Date().getTime()
-  // }
-  // appStore.usersMap.set(appStore.user.id, appStore.user)
+  
+  if (appStore.isOnline) return
+
   addMember(user)
   appStore.initConnection()
 }

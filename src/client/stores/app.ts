@@ -40,6 +40,8 @@ export const useAppStore = defineStore('app', () => {
   let socket: Socket
   const initConnection = () => {
     debug('初始化')
+    if (isOnline.value) return
+
     const serverUrl = localStorage.getItem('open-chat:server_url') as string
     const port = localStorage.getItem('open-chat:port') as string
     socket = io(serverUrl + ':' + port)
