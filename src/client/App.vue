@@ -7,7 +7,7 @@
       <Input />
     </div>
     <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center bg-white">
-      <UserList />
+      <!-- <UserList /> -->
     </div>
     <div v-if="!appStore.isOnline"
       class=" hidden sm:block fixed top-11 left-1 px-3 py-1 z-10 bg-[#dddddd] text-sm shadow">离线</div>
@@ -27,29 +27,33 @@ import UserList from './components/UserList.vue';
 import UserRegister from './components/UserRegister.vue';
 import OnlineUsers from './components/OnlineUsers.vue';
 import { computed, onMounted } from 'vue';
+import { addUser } from './stores/room';
+import { user } from './stores/user';
 
 const appStore = useAppStore()
 const session = useSessionStore()
 const isHasOnlineUsers = computed(() => Array.from(appStore.usersMap.values()).length !== 0)
 
-const getUserInfo = () => {
-  if (!localStorage.getItem('open-chat:user_info') || !localStorage.getItem('open-chat:server_url')) {
+const init = () => {
+  // 刚进来需要配置连接信息
+  if (!localStorage.getItem('open-chat:server_url')) {
     appStore.showRegister = true
     return
   }
-  const userInfo = JSON.parse(localStorage.getItem('open-chat:user_info') as string)
-  appStore.user.name = userInfo.name
-  appStore.user.type = userInfo.type
-  appStore.user.id = userInfo.id
-  if (!appStore.user.id) {
-    appStore.user.id = appStore.user.name + new Date().getTime()
-  }
-  appStore.usersMap.set(appStore.user.id, appStore.user)
+  // const userInfo = JSON.parse(localStorage.getItem('open-chat:user_info') as string)
+  // appStore.user.name = userInfo.name
+  // appStore.user.type = userInfo.type
+  // appStore.user.id = userInfo.id
+  // if (!appStore.user.id) {
+  //   appStore.user.id = appStore.user.name + new Date().getTime()
+  // }
+  // appStore.usersMap.set(appStore.user.id, appStore.user)
+  addUser(user)
   appStore.initConnection()
 }
 
 onMounted(() => {
-  getUserInfo()
+  init()
 })
 </script>
 <style lang="scss" scoped>

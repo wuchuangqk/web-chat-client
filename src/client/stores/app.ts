@@ -7,17 +7,14 @@ import { useSettingStore } from './setting'
 import { useSessionStore } from './session'
 import { Message, Event } from '@/common/enums/index'
 import type { IContent, ITextMessage } from '@/common/types/client'
+import { IUser } from '@/common/types'
+import { user } from './user'
+import { addUser } from './room'
 
 const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
 
 export const useAppStore = defineStore('app', () => {
   const session = useSessionStore()
-
-  const user = ref<IUser>({
-    name: '',
-    id: '',
-    type: '',
-  }) // 当前用户
   const usersMap = ref<Map<string, IUser>>(new Map())
   const contentList = ref<IContent[]>([]) // 消息记录
   const activeTab = ref(0)
@@ -42,20 +39,20 @@ export const useAppStore = defineStore('app', () => {
 
   let socket: Socket
   const initConnection = () => {
+    debug('初始化')
     const serverUrl = localStorage.getItem('open-chat:server_url') as string
     const port = localStorage.getItem('open-chat:port') as string
     socket = io(serverUrl + ':' + port)
     console.log('socket', socket);
-    
+
     // 建立连接
     socket.on('connect', () => {
-      console.log('client connect', socket.id);
-      // user.value.id = socket.id as string
-      // 将用户信息同步到后台，同时拉取房间内成员
-      // socket.emit('bind-user-info', user.value)
-      // 建立连接后加入房间
-      socket.emit(Event.JoinRoom, user.value)
+      console.log('客户端连接成功，sokcetId:', socket.id);
       isOnline.value = true
+      user.socketId = socket.id as string
+
+      // 连接成功后发送加入房间申请
+      socket.emit(Event.JoinRoom, user)
     })
     // 断开连接
     socket.on('disconnect', () => {
@@ -68,12 +65,13 @@ export const useAppStore = defineStore('app', () => {
     })
 
     socket.on(Event.NewMember, (newMember: IUser) => {
-      debug({ msg: '新成员加入房间', newMember })
+      console.log(`Event.NewMember`, newMember);
       contentList.value.push({
         type: Message.Notify,
         data: `${newMember.name}进入房间`
       })
-      usersMap.value.set(newMember.id, newMember)
+      addUser(newMember)
+      // usersMap.value.set(newMember.id, newMember)
     })
 
     // 文本消息

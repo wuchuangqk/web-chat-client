@@ -7,8 +7,8 @@ import type { IUser } from '../common/types/index.d.ts'
 
 const app = express()
 
-// 存储所有注册的用户
-const users = new Map<string, IUser>()
+// 记录在房间里的用户
+const members = new Map<string, IUser>()
 const socketMap = new Map()
 
 const initialPort = 4090
@@ -28,10 +28,10 @@ const startServer = (port: number) => {
     socket.on('disconnect', () => {
       console.log(`socket.id: ${socket.id} disconnect, 在线人数：${io.engine.clientsCount}`);
       // 看这个socket有没有关联的用户
-      const user = users.get(socket.id)
+      const user = members.get(socket.id)
       if (user) {
         socket.to(Room.Main).emit('broadcast:notify-message', { msg: `${user.name}离开房间` })
-        users.delete(socket.id)
+        members.delete(socket.id)
         socket.to(Room.Main).emit(Event.MemberLeave, user)
       }
     });
@@ -39,21 +39,22 @@ const startServer = (port: number) => {
     socket.on(Event.TextMessage, (msg) => {
       console.log('TextMessage', msg);
       // 广播给其他人
-      const user = users.get(socket.id)
+      const user = members.get(socket.id)
       socket.to(Room.Main).emit(Event.TextMessage, { userId: user!.id, msg })
     })
 
-    socket.on(Event.JoinRoom, (data: IUser) => {
-      // 加入房间的同时进行注册,将用户与socket.id关联
-      users.set(socket.id, data)
+    // 用户申请加入房间
+    socket.on(Event.JoinRoom, (user: IUser) => {
       socket.join(Room.Main)
+      // 加入房间的同时进行注册,将用户与socket.id关联
+      members.set(socket.id, user)
       // 通知其他人我进来了
-      socket.to(Room.Main).emit(Event.NewMember, data)
+      socket.to(Room.Main).emit(Event.NewMember, user)
     })
 
     socket.on('bind-user-info', (user) => {
-      users.set(socket.id, user)
-      io.to(Room.Main).emit('members', Array.from(users.values()))
+      members.set(socket.id, user)
+      io.to(Room.Main).emit('members', Array.from(members.values()))
       socket.to(Room.Main).emit('broadcast:notify-message', { msg: `${user.name}加入连接` })
     })
 

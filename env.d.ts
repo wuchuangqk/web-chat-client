@@ -6,15 +6,10 @@ interface IMessage2 {
   userId: string
 }
 interface IContent {
-  content: striing
+  content: string
   isSelf: boolean
   type: string
-  user: IUser
-}
-interface IUser {
-  name: string
-  id: string
-  type: string
+  user: any
 }
 interface IFileSender {
   rawFile: File
