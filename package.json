@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-  "dev": "vite --host",
+    "dev": "vite --host",
     "serve": "ts-node --esm --project tsconfig.node.json src/server/index.ts",
     "dev:server:watch": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules --poll --respawn ./src/server/index.ts",
     "preview": "vite preview",

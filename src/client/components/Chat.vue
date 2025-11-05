@@ -12,7 +12,7 @@
 import { toRefs, ref, watch, nextTick } from 'vue'
 import TextMessage from './Message/TextMessage.vue';
 import NotifyMessage from './Message/NotifyMessage.vue';
-import { useAppStore } from '@/stores/app';
+import { useAppStore } from '@/client/stores/app';
 import { Message } from '@/common/enums';
 import { ITextMessage, INotifyMessage } from '@/common/types/client';
 

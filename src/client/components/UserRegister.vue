@@ -43,7 +43,7 @@
 import { reactive } from 'vue'
 import Icon from './Icon.vue';
 import Button from './Button.vue';
-import { useAppStore } from '@/stores/app';
+import { useAppStore } from '@/client/stores/app';
 import { Equipment } from '@/common/enums';
 
 const appStore = useAppStore()
@@ -68,11 +68,15 @@ const submit = () => {
   if (!formData.name || !formData.type || !formData.serverUrl || !formData.port) return
   appStore.user.name = formData.name
   appStore.user.type = formData.type
+  if (!appStore.isUpdateInfo) {
+    appStore.user.id = appStore.user.name + new Date().getTime()
+    appStore.usersMap.set(appStore.user.id, appStore.user)
+  }
   localStorage.setItem('open-chat:user_info', JSON.stringify(appStore.user))
   localStorage.setItem('open-chat:server_url', formData.serverUrl)
   localStorage.setItem('open-chat:port', formData.port)
   appStore.showRegister = false
-  if (!appStore.user.id) {
+  if (!appStore.isUpdateInfo) {
     // 是否初次连接
     appStore.initConnection()
   } else {

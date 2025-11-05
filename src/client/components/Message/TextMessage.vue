@@ -18,10 +18,11 @@
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue'
 import Avatar from '../Avatar.vue';
-import { useAppStore } from '@/stores/app';
+import { useAppStore } from '@/client/stores/app';
+import { ITextMessage } from '@/common/types/client';
 
 const props = defineProps<{
-  message: IMessage2
+  message: ITextMessage
 }>()
 
 const { user, usersMap } = toRefs(useAppStore())

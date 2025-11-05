@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import { useSettingStore } from './setting'
 import { useSessionStore } from './session'
 import { Message, Event } from '@/common/enums/index'
-import type { IContent } from '@/common/types/client'
+import type { IContent, ITextMessage } from '@/common/types/client'
 
 const CHUNK_SIZE = 1 * 1024 * 1024 // 1MB
 
@@ -38,12 +38,15 @@ export const useAppStore = defineStore('app', () => {
   const isOnline = ref(false)
   const sendStatus = ref('待发送')
   const showSetting = ref(false)
+  const isUpdateInfo = ref(false)
 
   let socket: Socket
   const initConnection = () => {
     const serverUrl = localStorage.getItem('open-chat:server_url') as string
     const port = localStorage.getItem('open-chat:port') as string
     socket = io(serverUrl + ':' + port)
+    console.log('socket', socket);
+    
     // 建立连接
     socket.on('connect', () => {
       console.log('client connect', socket.id);
@@ -59,9 +62,18 @@ export const useAppStore = defineStore('app', () => {
       console.log('client disconnect');
       isOnline.value = false
     })
+    socket.on('error', (error) => {
+      console.log(error);
+      debug({ msg: 'socket client error' })
+    })
 
     socket.on(Event.NewMember, (newMember: IUser) => {
       debug({ msg: '新成员加入房间', newMember })
+      contentList.value.push({
+        type: Message.Notify,
+        data: `${newMember.name}进入房间`
+      })
+      usersMap.value.set(newMember.id, newMember)
     })
 
     // 文本消息
@@ -172,8 +184,8 @@ export const useAppStore = defineStore('app', () => {
     socket.emit('bind-user-info', user.value)
   }
   // 发送文本消息
-  const sendMessage = (data: IMessage2) => {
-    socket.emit('client:text-message', data.data)
+  const sendMessage = (message: ITextMessage) => {
+    socket.emit(Event.TextMessage, message.data)
   }
 
   const debugHelper = (msg: string) => {
@@ -295,6 +307,7 @@ export const useAppStore = defineStore('app', () => {
     isOnline,
     showSetting,
     sendStatus,
+    isUpdateInfo,
     initConnection,
     sendMessage,
     sendFile,

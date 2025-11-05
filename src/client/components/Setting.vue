@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import Icon from './Icon.vue';
 import Switch from './Switch.vue';
-import { useAppStore } from '@/stores/app';
-import { useSettingStore } from '@/stores/setting';
+import { useAppStore } from '@/client/stores/app';
+import { useSettingStore } from '@/client/stores/setting';
 
 const app = useAppStore()
 const setting = useSettingStore()

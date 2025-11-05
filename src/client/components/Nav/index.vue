@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
 import Title from './Title.vue';
-import { useAppStore } from '@/stores/app';
+import { useAppStore } from '@/client/stores/app';
 import Icon from '../Icon.vue';
 
 const appStore = useAppStore()

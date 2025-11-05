@@ -22,11 +22,11 @@ const startServer = (port: number) => {
   })
   // 一个新连接进来
   io.on('connection', (socket) => {
-    console.log(`new connection, socket.id: ${socket.id}`);
+    console.log(`new connection, socket.id: ${socket.id}, 在线人数：${io.engine.clientsCount}`);
 
     // 断开连接
     socket.on('disconnect', () => {
-      console.log(`socket.id: ${socket.id} disconnect`);
+      console.log(`socket.id: ${socket.id} disconnect, 在线人数：${io.engine.clientsCount}`);
       // 看这个socket有没有关联的用户
       const user = users.get(socket.id)
       if (user) {
@@ -37,6 +37,7 @@ const startServer = (port: number) => {
     });
 
     socket.on(Event.TextMessage, (msg) => {
+      console.log('TextMessage', msg);
       // 广播给其他人
       const user = users.get(socket.id)
       socket.to(Room.Main).emit(Event.TextMessage, { userId: user!.id, msg })
@@ -46,7 +47,6 @@ const startServer = (port: number) => {
       // 加入房间的同时进行注册,将用户与socket.id关联
       users.set(socket.id, data)
       socket.join(Room.Main)
-      console.log(`${data.name}加入主方间`);
       // 通知其他人我进来了
       socket.to(Room.Main).emit(Event.NewMember, data)
     })

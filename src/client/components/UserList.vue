@@ -23,8 +23,8 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useAppStore } from '@/stores/app';
-import { useSettingStore } from '@/stores/setting';
+import { useAppStore } from '@/client/stores/app';
+import { useSettingStore } from '@/client/stores/setting';
 import Icon from './Icon.vue';
 import Switch from './Switch.vue';
 import { debug } from '@/client/utils'

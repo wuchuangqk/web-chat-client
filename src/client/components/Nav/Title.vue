@@ -1,10 +1,10 @@
 <template>
-  <div>{{ session.isTargetJoin ? "会话进行中" : "等待对方加入" }}</div>
+  <div>共{{ app.usersMap.size }}台设备在线</div>
 </template>
 <script setup lang="ts">
-import { useSessionStore } from "@/stores/session";
+import { useAppStore } from "@/client/stores/app";
 
-const session = useSessionStore();
+const app = useAppStore();
 </script>
 
 <style lang="scss" scoped></style>

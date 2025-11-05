@@ -1,4 +1,4 @@
-import { useAppStore } from '@/stores/app'
+import { useAppStore } from '@/client/stores/app'
 export class SendDataChannel {
   peerConnection: RTCPeerConnection
   dataChannel: RTCDataChannel // 数据通道

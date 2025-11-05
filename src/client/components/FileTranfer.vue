@@ -56,7 +56,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useAppStore } from '@/stores/app';
+import { useAppStore } from '@/client/stores/app';
 import Button from './Button.vue';
 import { computed, toRefs } from 'vue';
 import { fmtSize } from '@/client/utils'

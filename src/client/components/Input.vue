@@ -36,8 +36,8 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { useAppStore } from "@/stores/app";
-import { useSessionStore } from "@/stores/session";
+import { useAppStore } from "@/client/stores/app";
+import { useSessionStore } from "@/client/stores/session";
 import Button from "./Button.vue";
 import FileUploader from "./FileUploader.vue";
 import { Message } from "@/common/enums";
@@ -55,7 +55,7 @@ const send = () => {
   if (!content.value.trim()) return;
   const value = content.value.split("\n").join("<br/>");
   const message = {
-    type: "message",
+    type: Message.Text,
     data: value,
     userId: appStore.user.id,
   };

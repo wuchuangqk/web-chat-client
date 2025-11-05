@@ -3,7 +3,7 @@
     <Nav />
     <div v-show="appStore.activeTab === 0" class="flex-1 overflow-hidden flex flex-col">
       <Chat />
-      <OnlineUsers v-if="session.isTargetJoin" />
+      <OnlineUsers />
       <Input />
     </div>
     <div v-show="appStore.activeTab === 1" class="flex-1 flex justify-center bg-white">
@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import Chat from './components/Chat.vue';
 import Input from './components/Input.vue';
-import { useAppStore } from '@/stores/app';
-import { useSessionStore } from '@/stores/session';
+import { useAppStore } from '@/client/stores/app';
+import { useSessionStore } from '@/client/stores/session';
 import FileTranfer from './components/FileTranfer.vue';
 import Nav from './components/Nav/index.vue';
 import UserList from './components/UserList.vue';
@@ -40,6 +40,11 @@ const getUserInfo = () => {
   const userInfo = JSON.parse(localStorage.getItem('open-chat:user_info') as string)
   appStore.user.name = userInfo.name
   appStore.user.type = userInfo.type
+  appStore.user.id = userInfo.id
+  if (!appStore.user.id) {
+    appStore.user.id = appStore.user.name + new Date().getTime()
+  }
+  appStore.usersMap.set(appStore.user.id, appStore.user)
   appStore.initConnection()
 }
 

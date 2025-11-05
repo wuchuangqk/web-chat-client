@@ -58,6 +58,6 @@ export const debug = (data: any) => {
 const md = new MobileDetect(window.navigator.userAgent);
 export const isMobile = md.mobile()
 
-if (import.meta.env.DEV) {
-  new VConsole()
-}
+// if (import.meta.env.DEV) {
+//   new VConsole()
+// }

@@ -6,7 +6,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useAppStore } from '@/stores/app';
+import { useAppStore } from '@/client/stores/app';
 const store = useAppStore()
 const tabs = ['发消息', '传文件']
 </script>

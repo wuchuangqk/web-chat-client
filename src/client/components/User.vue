@@ -9,7 +9,7 @@
 </template>
 <script setup lang="ts">
 import { toRefs } from 'vue'
-import { useAppStore } from '@/stores/app';
+import { useAppStore } from '@/client/stores/app';
 
 const { userList, user } = toRefs(useAppStore())
 const getName = (_user: IUser) => {
